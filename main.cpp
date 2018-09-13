@@ -665,8 +665,8 @@ vector<pair<int,int> > neighbour( int player_id ){
     if(player_id==1){
         for(int i=0;i<rings1.size();i++){
             pair<int,int> curr_ring = rings1[i];
-            int x_change[] = {1,-1,0,0,1.-1};
-            int y_change[] = {0,0,1,-1,-1.1};
+            int x_change[] = {1,-1, 0, 0, 1,-1};
+            int y_change[] = {0, 0, 1,-1,-1, 1};
 
             for(int j=0;j<6;j++){
                 int x_cordinate=curr_ring.first+x_change[j];
@@ -745,13 +745,14 @@ int main(int argc, char** argv) {
     cout << "alright" << "\n";
     
     // int player_id, board_size, time_limit;
-    // string move;
+    string move;
     // // Get input from server about game specifications
     // cin >> player_id >> board_size >> time_limit;
 
+    int player_id=1;
     // if(player_id == 2) {
     //     // Get other player's move
-    //     cin>>move; 
+    //     getline(cin, move); 
         
     //     while(true) {
     //         cout<<"P 1 0"<<endl;
@@ -760,9 +761,23 @@ int main(int argc, char** argv) {
     // }   
     // else if(player_id == 1) {
     //     while(true) {
-    //         cout<<"P 0 0"<<endl;
-    //         cin>>move; 
+    //         // cout<<"P 0 0"<<endl;
+    //         // /cin>>move;
+    //         getline(cin, move);
+    //         make_move(move, 1); 
     //     }
     // }
+
+    make_move("P 0 0", 1);
+    make_move("S 0 0 M 1 1", 1);
+    cout << "No. of player1 rings: "<<rings1.size() << "\n";
+    cout << "Position: " << rings1[0].first << " " << rings1[0].second << "\n";
+    vector<pair<int,int> > n = neighbour(1);
+    cout << "No. of neighbours: "<<n.size() << "\n";
+    for(int i=0;i<n.size();i++){
+        cout << "Neighbour " << i+1 << ": "<< "Hexagon: "<<b.get_hexagon_point(n[i].first, n[i].second).first << " - Point: "<<b.get_hexagon_point(n[i].first, n[i].second).second <<"\n";
+    }
+
+
     return 0;
 }
