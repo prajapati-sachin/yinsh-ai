@@ -131,7 +131,42 @@ board_convert::board_convert(){
 		}
 	}
 
+// initializing corner points
+	corner_points[0][0]=make_pair(1,10);
+	corner_points[0][1]=make_pair(0,9);
+	corner_points[0][2]=make_pair(0,8);
+	corner_points[0][3]=make_pair(0,7);
+	corner_points[0][4]=make_pair(0,6);
+	corner_points[0][5]=make_pair(1,5);
+	corner_points[0][6]=make_pair(1,4);
+	corner_points[0][7]=make_pair(2,3);
+	corner_points[0][8]=make_pair(3,2);
+	corner_points[0][9]=make_pair(4,1);
+	corner_points[0][10]=make_pair(6,0);
 
+	corner_points[1][0]=make_pair(0,6);
+	corner_points[1][1]=make_pair(1,4);
+	corner_points[1][2]=make_pair(2,3);
+	corner_points[1][3]=make_pair(3,2);
+	corner_points[1][4]=make_pair(4,1);
+	corner_points[1][5]=make_pair(5,1);
+	corner_points[1][6]=make_pair(6,0);
+	corner_points[1][7]=make_pair(7,0);
+	corner_points[1][8]=make_pair(8,0);
+	corner_points[1][9]=make_pair(9,0);
+	corner_points[1][10]=make_pair(10,1);
+
+	corner_points[2][0]=make_pair(6,9);
+	corner_points[2][1]=make_pair(4,10);
+	corner_points[2][2]=make_pair(3,10);
+	corner_points[2][3]=make_pair(2,10);
+	corner_points[2][4]=make_pair(1,10);
+	corner_points[2][5]=make_pair(1,9);
+	corner_points[2][6]=make_pair(0,9);
+	corner_points[2][7]=make_pair(0,8);
+	corner_points[2][8]=make_pair(0,7);
+	corner_points[2][9]=make_pair(0,6);
+	corner_points[2][10]=make_pair(1,4);
 
 
 }
@@ -144,6 +179,9 @@ pair<int,int> board_convert::get_hexagon_point(int x, int y ){
 	return data_2d[x][y];
 }
 
+pair<int,int> board_convert::get_corner_point(int i, int j ){
+	return corner_points[i][j];
+}
 
 int board_convert::no_of_hexagons(){
 	return hex_data.size();
@@ -152,3 +190,5 @@ int board_convert::no_of_hexagons(){
 int board_convert::points_in_hexagon_i(int i){
 	return hex_data[i].size();
 }
+
+

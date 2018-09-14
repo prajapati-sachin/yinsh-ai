@@ -12,6 +12,8 @@ public:
 
 	pair<int,int> data_2d[11][11];
 
+	pair<int,int> corner_point[3][11];
+
 // public:	
 	board_convert();
 
@@ -19,9 +21,13 @@ public:
 
 	pair<int,int> get_hexagon_point(int x, int y );
 
+	pair<int,int> get_corner_point(int i, int j );
+
 	int no_of_hexagons();
 
 	int points_in_hexagon_i(int i);
+
+
 
 
 };

@@ -26,7 +26,9 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
         }
     }
     else if(move.at(0)=='S'){
+
         if(move.length()<12){
+            vector<pair<int,int> > flipped;//to store markers that have been flipped
             //place a marker at position -> move a ring to new position     
             int hexagon_marker = move.at(2)-'0';
             int point_in_hexagon_for_marker = move.at(4)-'0';
@@ -37,6 +39,7 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
             if(player_id==1){
                 if(tempboard[coordinates_for_marker.first][coordinates_for_marker.second]==3 && tempboard[coordinates_for_ring.first][coordinates_for_ring.second]==0){
                     tempboard[coordinates_for_marker.first][coordinates_for_marker.second]=1;
+                    flipped.push_back(coordinates_for_marker);
                     tempboard[coordinates_for_ring.first][coordinates_for_ring.second]=3;
                     //change the position in rings1
                     int find = find_in_vector(rings1, coordinates_for_marker);
@@ -56,9 +59,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i>coordinates_for_ring.second;i--){
                             if(tempboard[coordinates_for_marker.first][i]==1){
                                 tempboard[coordinates_for_marker.first][i]=2;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                             else if(tempboard[coordinates_for_marker.first][i]==2){
                                 tempboard[coordinates_for_marker.first][i]=1;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                         }
                     }
@@ -67,9 +72,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i<coordinates_for_ring.second;i++){
                             if(tempboard[coordinates_for_marker.first][i]==1){
                                 tempboard[coordinates_for_marker.first][i]=2;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                             else if(tempboard[coordinates_for_marker.first][i]==2){
                                 tempboard[coordinates_for_marker.first][i]=1;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                         }
                     }
@@ -81,9 +88,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i>coordinates_for_ring.first;i--){
                             if(tempboard[i][coordinates_for_marker.second]==1){
                                 tempboard[i][coordinates_for_marker.second]=2;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                             else if(tempboard[i][coordinates_for_marker.second]==2){
                                 tempboard[i][coordinates_for_marker.second]=1;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                         }
                     }
@@ -92,9 +101,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i<coordinates_for_ring.first;i++){
                             if(tempboard[i][coordinates_for_marker.second]==1){
                                 tempboard[i][coordinates_for_marker.second]=2;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                             else if(tempboard[i][coordinates_for_marker.second]==2){
                                 tempboard[i][coordinates_for_marker.second]=1;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                         }
                     }
@@ -107,9 +118,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start1;i>coordinates_for_ring.first;i--){
                             if(tempboard[i][start2]==1){
                                 tempboard[i][start2]=2;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             else if(tempboard[i][start2]==2){
                                 tempboard[i][start2]=1;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             start2++;
                         }
@@ -120,9 +133,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start1;i<coordinates_for_ring.first;i++){
                             if(tempboard[i][start2]==1){
                                 tempboard[i][start2]=2;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             else if(tempboard[i][start2]==2){
                                 tempboard[i][start2]=1;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             start2--;
                         }
@@ -135,6 +150,7 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                 if(tempboard[coordinates_for_marker.first][coordinates_for_marker.second]==4 && tempboard[coordinates_for_ring.first][coordinates_for_ring.second]==0){
                     //could also include check for a single line
                     tempboard[coordinates_for_marker.first][coordinates_for_marker.second]=2;
+                    flipped.push_back(coordinates_for_marker);          
                     tempboard[coordinates_for_ring.first][coordinates_for_ring.second]=4;
                     //change the position in rings1
                     int find = find_in_vector(rings2, coordinates_for_marker);
@@ -154,9 +170,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i>coordinates_for_ring.second;i--){
                             if(tempboard[coordinates_for_marker.first][i]==1){
                                 tempboard[coordinates_for_marker.first][i]=2;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                             else if(tempboard[coordinates_for_marker.first][i]==2){
                                 tempboard[coordinates_for_marker.first][i]=1;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                         }
                     }
@@ -165,9 +183,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i<coordinates_for_ring.second;i++){
                             if(tempboard[coordinates_for_marker.first][i]==1){
                                 tempboard[coordinates_for_marker.first][i]=2;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                             else if(tempboard[coordinates_for_marker.first][i]==2){
                                 tempboard[coordinates_for_marker.first][i]=1;
+                                flipped.push_back(make_pair(coordinates_for_marker.first,i));
                             }
                         }
                     }
@@ -179,9 +199,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start;i>coordinates_for_ring.first;i--){
                             if(tempboard[i][coordinates_for_marker.second]==1){
                                 tempboard[i][coordinates_for_marker.second]=2;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                             else if(tempboard[i][coordinates_for_marker.second]==2){
                                 tempboard[i][coordinates_for_marker.second]=1;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                         }
                     }
@@ -189,10 +211,12 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         int start = coordinates_for_marker.first+1;
                         for(int i=start;i<coordinates_for_ring.first;i++){
                             if(tempboard[i][coordinates_for_marker.second]==1){
-                                tempboard[i][coordinates_for_marker.second]=2;
+                                tempboard[i][coordinates_for_marker.second]=2
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));;
                             }
                             else if(tempboard[i][coordinates_for_marker.second]==2){
                                 tempboard[i][coordinates_for_marker.second]=1;
+                                flipped.push_back(make_pair(i,coordinates_for_marker.second));
                             }
                         }
                     }
@@ -205,9 +229,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start1;i>coordinates_for_ring.first;i--){
                             if(tempboard[i][start2]==1){
                                 tempboard[i][start2]=2;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             else if(tempboard[i][start2]==2){
                                 tempboard[i][start2]=1;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             start2++;
                         }
@@ -218,9 +244,11 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
                         for(int i=start1;i<coordinates_for_ring.first;i++){
                             if(tempboard[i][start2]==1){
                                 tempboard[i][start2]=2;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             else if(tempboard[i][start2]==2){
                                 tempboard[i][start2]=1;
+                                flipped.push_back(make_pair(i,start2));
                             }
                             start2--;
                         }
@@ -231,6 +259,50 @@ void make_move_in_board(string move, int player_id, int tempboard[][],str){
             
             else{
                 cout << "Invalid Move" << "\n";    
+            }
+            int ring_remove=0;
+            
+            vector< pair < pair <int,int>, pair <int,int> > > removing_markers//markers to be removed
+            int x_change[] = {1, 0, 1};
+            int y_change[] = {0, 1,-1};
+            for(int i=0;i<2;i++){
+                for (int j=1;j<10;j++)
+                {
+                    pair<int,int> corner_point = b.get_corner_point(i,j);
+                    int count=0;
+                    pair <int,int> start;
+                    pair <int,int> end;
+                    int x_const = corner_point.first;
+                    int y_const = corner_point.second;
+                    while(tempboard[x_const][y_const]!=-1){
+
+                        if(tempboard[x_const][y_const]==player_id){
+                            count++;
+                            if(count==1){
+                                start=make_pair(x_const,y_const);
+                            }
+                            if(count==5){
+                                end=make_pair(x_const,y_const);
+                                removing_markers.push_back(make_pair(start,end))
+                                ring_remove=1;
+                            }
+                        }else{
+                            count=0;
+                        }
+
+                        x_const+=x_change[i];
+                        y_const+=y_change[i];
+                        }
+
+                }
+            }
+
+
+
+            
+                
+            if(ring_remove!=0){
+
             }
 
         }
