@@ -1414,12 +1414,14 @@ int main(int argc, char** argv) {
                 pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
                 if(board[inboard.first][inboard.second]==0){
                     // place the ring
+                    board[inboard.first][inboard.second]=4
+                    //output
+                    cout << temp << "\n";
                 }
                 else{
-
+                    ring_move--;
                 }
-                //SIMPLY PLACE A RING
-                
+                //SIMPLY PLACE A RING                
                 ring_move++;
             }
             else{
@@ -1439,7 +1441,19 @@ int main(int argc, char** argv) {
         while(true){
             //OUTPUT YOUR MOVE
             if(ring_move<5){
-                //SIMPLY PLACE A RING
+                string temp = initial_moves.pop();
+                pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+                if(board[inboard.first][inboard.second]==0){
+                    // place the ring
+                    board[inboard.first][inboard.second]=3
+                    //output
+                    cout << temp << "\n";
+                }
+                else{
+                    ring_move--;
+                }
+                //SIMPLY PLACE A RING                
                 ring_move++;
             }
             else{
