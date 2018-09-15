@@ -1,6 +1,6 @@
 #include <iostream>
 #include "board_convert.h"
-
+#include "Board.h"
 
 using namespace std;
 
@@ -115,7 +115,7 @@ void remove_rings(Board tempBoard , pair < pair <int,int>, pair <int,int> > remo
     int counter1 = start.first;
     int counter2 = start.second;
     while(!(counter1==end.first&&counter2==end.second)){
-        tempboard.set_at_position(counter1,counter2,0);
+        tempBoard.set_at_position(counter1,counter2,0);
         if(k==0){
             counter1+=x_change[j];
             counter2+=y_change[j];
@@ -124,7 +124,7 @@ void remove_rings(Board tempBoard , pair < pair <int,int>, pair <int,int> > remo
             counter2-=y_change[j];
         }                      
     }
-    tempboard.set_at_position(counter1,counter2,0);
+    tempBoard.set_at_position(counter1,counter2,0);
 
 }
 

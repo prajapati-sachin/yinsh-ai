@@ -30,13 +30,13 @@ public:
 
     int get_at_position(int i,int j);
 
-    void set_ring_count(int player,int value);
+    // void set_ring_count(int player,int value);
 
-    void set_marker_count(int player,int value);
+    // void set_marker_count(int player,int value);
 
-    void insert_ring(int player);
+    // void insert_ring(int player);
 
-    void delete_ring(int player);
+    // void delete_ring(int player);
 
     void set_at_position(int i,int j,int value);
 
