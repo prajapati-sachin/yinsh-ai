@@ -5,11 +5,11 @@
 #include "board_convert.h"
 
 using namespace std;
-
+#include "board_convert.h"
 
 class Board {
-// private:
 public:
+
     int board[11][11];
     board_convert b;
     vector<pair<int, int> > rings[2];
@@ -20,7 +20,7 @@ public:
     Board();
 
     //copy
-    Board(Board copy)();
+    Board(const Board& copy);
 
     int get_ring_count(int player);
 
@@ -43,4 +43,9 @@ public:
 
 
 
-}
+};
+
+int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit);
+
+
+#endif

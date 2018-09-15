@@ -22,16 +22,16 @@ Blue Ring: 4  -> playerid 2
 
 
 
-int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit){
-    int position=-1;
-    for(int i=0;i<rings.size();i++){
-        if(rings[i]==findit){
-            position=i;
-            break;
-        }
-    }
-    return position;
-}
+// int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit){
+//     int position=-1;
+//     for(int i=0;i<rings.size();i++){
+//         if(rings[i]==findit){
+//             position=i;
+//             break;
+//         }
+//     }
+//     return position;
+// }
 
 void initialize_board(){
     for(int i=0;i<11;i++){
@@ -142,7 +142,7 @@ void place_ring_in_board(pair<int,int> coordinates_in_board,int player_id, Board
 void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board tempBoard, string str){
     if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
         tempBoard.set_at_position(coordinates_for_marker.first,coordinates_for_marker.second,player_id);
-        tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second,player_id+2);
+        tempBoard.set_at_position(coordinates_for_ring.first,coordinates_for_ring.second,player_id+2);
         // int find = find_in_vector(temp_rings[player_id-1], coordinates_for_marker);
         // if(find!=-1){
         //     rings1.erase(rings1.begin() + find);
@@ -185,9 +185,9 @@ void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coo
 
         while(!(counter1==coordinates_for_ring.first&&counter2==coordinates_for_ring.second)){
             if(tempBoard.get_at_position(counter1,counter2)==1)
-               tempBoard.get_at_position(counter1,counter2,2); 
+               tempBoard.set_at_position(counter1,counter2,2); 
             else if(tempBoard.get_at_position(counter1,counter2)==2)
-            	tempBoard.get_at_position(counter1,counter2,1);
+            	tempBoard.set_at_position(counter1,counter2,1);
             if(k==0){
                 counter1+=x_change[j];
                 counter2+=y_change[j];
@@ -206,7 +206,7 @@ void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coo
             remove_rings(tempBoard,removing_markers[0]);
             removing_markers = find_removing_markers(tempBoard,player_id);
 
-            vector<pair <int,int> > temp_rings = tempBoard.get_rings(playerid);
+            vector<pair <int,int> > temp_rings = tempBoard.get_rings(player_id);
             pair <int,int> temp_ring = temp_rings[0];
             tempBoard.set_at_position(temp_ring.first,temp_ring.second,0);
                 //output the string
@@ -955,24 +955,24 @@ int main(int argc, char** argv) {
     // cout << "At center: " << board[5][5] << "\n";
     // cout << "Ring: " << board[6][5] << "\n";
 
-    pair<int,int> p = make_pair(5,5);
-    pair<int,int> q = make_pair(9,5);
-    string str="as";
-    p = make_pair(5,5);
-    place_ring_in_board(p,1,board, rings, str);
-    cout<<(rings[0]).size()<<endl;
-    board[6][5]=2;
-    board[7][5]=2;
-    board[8][5]=2;
-    board[4][5]=1;
+    // pair<int,int> p = make_pair(5,5);
+    // pair<int,int> q = make_pair(9,5);
+    // string str="as";
+    // p = make_pair(5,5);
+    // place_ring_in_board(p,1,board, rings, str);
+    // cout<<(rings[0]).size()<<endl;
+    // board[6][5]=2;
+    // board[7][5]=2;
+    // board[8][5]=2;
+    // board[4][5]=1;
 
-    p = make_pair(5,5);
-    q = make_pair(9,5);
-    move_ring_in_board(p,q,1,board,rings, str);
+    // p = make_pair(5,5);
+    // q = make_pair(9,5);
+    // move_ring_in_board(p,q,1,board,rings, str);
 
-    for(int i=0;i<6;i++){
-    	cout<<"board[4+i][5] : "<<board[4+i][5]<<endl;
-    }
+    // for(int i=0;i<6;i++){
+    // 	cout<<"board[4+i][5] : "<<board[4+i][5]<<endl;
+    // }
 
 
 

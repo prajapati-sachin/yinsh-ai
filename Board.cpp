@@ -5,7 +5,7 @@ using namespace std;
 Board::Board(){
 	for(int i=0;i<11;i++){
         for(int j=0;j<11;j++){
-            this->board[i][j]=-1;
+            board[i][j]=-1;
         }
     }
     int num_hex=b.no_of_hexagons();
@@ -15,38 +15,38 @@ Board::Board(){
         for(int j=0;j<num_points;j++){
             pair<int, int> a = b.get_2dpoint(i, j);
             if(a.first!=-1 && a.second!=-1)
-                this->board[a.first][a.second]=0;
+                board[a.first][a.second]=0;
         }
     }
 
 
-    this->ring_count[0]=0;
-    this->marker_count[0]=0;
-    this->ring_count[1]=0;
-    this->marker_count[1]=0;
+    ring_count[0]=0;
+    marker_count[0]=0;
+    ring_count[1]=0;
+    marker_count[1]=0;
 }
 
-Board::Board(Board copy){
+Board::Board(const Board& copy){
 	for(int i=0;i<11;i++){
         for(int j=0;j<11;j++){
-            this->board[i][j]=copy.at_position(i,j);
+            board[i][j]=copy.board[i][j];//get_at_position(i,j);
         }
     }
 
-    this->ring_count[0]=copy.get.ring_count[0];
-    this->marker_count[0]=copy.get.marker_count[0];
-    this->ring_count[1]=copy.get.ring_count[0];
-    this->marker_count[1]=copy.get.ring_count[0];
-    this->rings[0]=copy.get.rings[0];
-    this->rings[1]=copy.get.rings[1];
+    ring_count[0]=copy.ring_count[0];
+    marker_count[0]=copy.marker_count[0];
+    ring_count[1]=copy.ring_count[1];
+    marker_count[1]=copy.ring_count[1];
+    rings[0]=copy.rings[0];
+    rings[1]=copy.rings[1];
 }
 
 int Board::get_ring_count(int player){
-	return this->ring_count[player];
+	return ring_count[player];
 }
 
 int Board::get_marker_count(int player){
-	return this->marker_count[player];
+	return marker_count[player];
 }
 
 vector<pair<int, int> > Board::get_rings(int player){
@@ -54,72 +54,73 @@ vector<pair<int, int> > Board::get_rings(int player){
 }
 
 int Board::get_at_position(int i,int j){
-	return this->board[i][j];
+	return board[i][j];
 }
 
-void set_at_position(int i,int j,int value){
-	int prev_value = this->board[i][j];
+void Board::set_at_position(int i,int j,int value){
+	int d=0;
+	int prev_value = board[i][j];
 	if(prev_value==0){
 		if(value==1)
-			this->marker_count[0]++;
+			marker_count[0]++;
 		else if(value==2)
-			this->marker_count[1]++;
+			marker_count[1]++;
 		else if(value==3){
-			this->ring_count[0]++;
+			ring_count[0]++;
 			rings[0].push_back(make_pair(i,j));
 		}
 		else if(value==4){
-			this->ring_count[1]++;
+			ring_count[1]++;
 			rings[1].push_back(make_pair(i,j));
 		}
 		else
 			cout<<"wrong"<<endl;
 	}else if(prev_value==1){
-		this->marker_count[0]--;
+		marker_count[0]--;
 		if(value==2)
-			this->marker_count[1]++;
+			marker_count[1]++;
 		else if(value==0)
-			continue;
+			d=1;//continue;
 		else
 			cout<<"wrong"<<endl;
 	}else if(prev_value==2){
-		this->marker_count[1]--;
+		marker_count[1]--;
 		if(value==1)
-			this->marker_count[0]++;
+			marker_count[0]++;
 		else if(value==0)
-			continue;
+			d=1;//continue;
 		else
 			cout<<"wrong"<<endl;
 	}else if(prev_value==3){
 		if(value==1){
-			this->marker_count[0]++;
+			marker_count[0]++;
 			int find = find_in_vector(rings[0], make_pair(i,j));
 			if(find!=-1){
-            	this->rings[0].erase(rings1.begin() + find);
-            	this->ring_count[0]--;
+            	rings[0].erase(rings[0].begin() + find);
+            	ring_count[0]--;
         	}
 		}
 		else if(value==0)
-			this->ring_count[0]--;
+			ring_count[0]--;
 		else
 			cout<<"wrong"<<endl;
 	}else if(prev_value==4){
 		if(value==2){
-			this->marker_count[1]++;
+			marker_count[1]++;
 			int find = find_in_vector(rings[1], make_pair(i,j));
 			if(find!=-1){
-            	this->rings[1].erase(rings1.begin() + find);
-            	this->ring_count[1]--;
+            	rings[1].erase(rings[1].begin() + find);
+            	ring_count[1]--;
         	}
 		}
 		else if(value==0)
-			this->ring_count[1]--;
+			ring_count[1]--;
 		else
 			cout<<"wrong"<<endl;
 	}else{
 		cout<<"wrong"<<endl;
 	}
-	this->board[i][j]=value;
+	board[i][j]=value;
 }
 
 int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit){
