@@ -42,15 +42,16 @@ Board::Board(const Board& copy){
 }
 
 int Board::get_ring_count(int player){
-	return ring_count[player];
+	return ring_count[player-1];
 }
 
 int Board::get_marker_count(int player){
-	return marker_count[player];
+	return marker_count[player-1];
 }
 
 vector<pair<int, int> > Board::get_rings(int player){
-	return rings[player];
+
+	return rings[player-1];
 }
 
 int Board::get_at_position(int i,int j){
