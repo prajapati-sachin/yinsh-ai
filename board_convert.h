@@ -12,7 +12,7 @@ public:
 
 	pair<int,int> data_2d[11][11];
 
-	pair<int,int> corner_point[3][11];
+	pair<int,int> corner_points[3][11];
 
 // public:	
 	board_convert();
