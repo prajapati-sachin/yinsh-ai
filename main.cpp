@@ -49,9 +49,10 @@ void initialize_board(){
                 board[a.first][a.second]=0;
         }
     }
+
 }
 
-vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(int tempboard[11][11],int player_id){
+vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(Board tempBoard,int player_id){
     vector< pair < pair <int,int>, pair <int,int> > > removing_markers;
     int x_change[] = {1, 0, 1};
     int y_change[] = {0, 1,-1};
@@ -64,9 +65,9 @@ vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(int tempboard[
             pair <int,int> end;
             int x_const = corner_point.first;
             int y_const = corner_point.second;
-            while(tempboard[x_const][y_const]!=-1){
+            while(tempBoard.get_at_position(x_const,y_const)!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
 
-                if(tempboard[x_const][y_const]==player_id){
+                if(tempBoard.get_at_position(x_const,y_const)==player_id){
                     count++;
                     if(count==1){
                         start=make_pair(x_const,y_const);
@@ -89,7 +90,7 @@ vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(int tempboard[
     return removing_markers;
 }
 
-void remove_rings(int tempboard[11][11] , pair < pair <int,int>, pair <int,int> > removing_marker_pair){
+void remove_rings(Board tempBoard , pair < pair <int,int>, pair <int,int> > removing_marker_pair){
     pair<int,int> start=removing_marker_pair.first;
     pair<int,int> end = removing_marker_pair.second;
     int x_change[] = {1, 0, 1};
@@ -114,7 +115,7 @@ void remove_rings(int tempboard[11][11] , pair < pair <int,int>, pair <int,int> 
     int counter1 = start.first;
     int counter2 = start.second;
     while(!(counter1==end.first&&counter2==end.second)){
-        tempboard[counter1][counter2]=0;
+        tempboard.set_at_position(counter1,counter2,0);
         if(k==0){
             counter1+=x_change[j];
             counter2+=y_change[j];
@@ -123,14 +124,14 @@ void remove_rings(int tempboard[11][11] , pair < pair <int,int>, pair <int,int> 
             counter2-=y_change[j];
         }                      
     }
-    tempboard[counter1][counter2]=0;
+    tempboard.set_at_position(counter1,counter2,0);
 
 }
 
-void place_ring_in_board(pair<int,int> coordinates_in_board,int player_id, int tempboard[11][11], vector<pair<int,int> > temp_rings[2], string str){
-    if(tempboard[coordinates_in_board.first][coordinates_in_board.second]==0){
-        tempboard[coordinates_in_board.first][coordinates_in_board.second] = player_id+2;
-        temp_rings[player_id-1].push_back(coordinates_in_board);
+void place_ring_in_board(pair<int,int> coordinates_in_board,int player_id, Board tempBoard, string str){
+    if(tempBoard.get_at_position(coordinates_in_board.first,coordinates_in_board.second)==0){
+        tempBoard.set_at_position(coordinates_in_board.first,coordinates_in_board.second,player_id+2) ;
+        //temp_rings[player_id-1].push_back(coordinates_in_board);
         //cout<<"aa: "<<temp_rings[player_id-1][0].first<<","<<temp_rings[player_id-1][0].second<<endl;
         //output the string
     }else{
@@ -138,18 +139,18 @@ void place_ring_in_board(pair<int,int> coordinates_in_board,int player_id, int t
     }
 }
 
-void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, int tempboard[11][11], vector<pair<int,int> > temp_rings[2], string str){
-    if(tempboard[coordinates_for_marker.first][coordinates_for_marker.second]==player_id+2 && tempboard[coordinates_for_ring.first][coordinates_for_ring.second]==0){
-        tempboard[coordinates_for_marker.first][coordinates_for_marker.second]=player_id;
-        tempboard[coordinates_for_ring.first][coordinates_for_ring.second]=player_id+2;
-        int find = find_in_vector(temp_rings[player_id-1], coordinates_for_marker);
-        if(find!=-1){
-            rings1.erase(rings1.begin() + find);
-        }
-        else{
-            cout << "Invalid Move" << "\n";       
-        }
-        temp_rings[player_id-1].push_back(coordinates_for_ring);
+void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board tempBoard, string str){
+    if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
+        tempBoard.set_at_position(coordinates_for_marker.first,coordinates_for_marker.second,player_id);
+        tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second,player_id+2);
+        // int find = find_in_vector(temp_rings[player_id-1], coordinates_for_marker);
+        // if(find!=-1){
+        //     rings1.erase(rings1.begin() + find);
+        // }
+        // else{
+        //     cout << "Invalid Move" << "\n";       
+        // }
+        // temp_rings[player_id-1].push_back(coordinates_for_ring);
 
         //flip the markers
         int x_change[] = {1, 0, 1};
@@ -183,8 +184,10 @@ void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coo
         } 
 
         while(!(counter1==coordinates_for_ring.first&&counter2==coordinates_for_ring.second)){
-            if(tempboard[counter1][counter2]==1||tempboard[counter1][counter2]==2)
-               tempboard[counter1][counter2]=3-tempboard[counter1][counter2]; 
+            if(tempBoard.get_at_position(counter1,counter2)==1)
+               tempBoard.get_at_position(counter1,counter2,2); 
+            else if(tempBoard.get_at_position(counter1,counter2)==2)
+            	tempBoard.get_at_position(counter1,counter2,1);
             if(k==0){
                 counter1+=x_change[j];
                 counter2+=y_change[j];
@@ -196,17 +199,20 @@ void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coo
         //checking if ring would be removed or not
 
             
-        vector< pair < pair <int,int>, pair <int,int> > > removing_markers = find_removing_markers(tempboard,player_id);//markers to be removed
+        vector< pair < pair <int,int>, pair <int,int> > > removing_markers = find_removing_markers(tempBoard,player_id);//markers to be removed
         //cout<<"size: "<<removing_markers.size()<<endl;
-        if(removing_markers.size()==1){
+        while(removing_markers.size()!=0){
     		//cout<<(removing_markers[0].first).first<<","<<(removing_markers[0].first).second<<":"<<(removing_markers[0].second).first<<","<<(removing_markers[0].second).second<<endl;
-            remove_rings(tempboard,removing_markers[0]);
+            remove_rings(tempBoard,removing_markers[0]);
+            removing_markers = find_removing_markers(tempBoard,player_id);
+
+            vector<pair <int,int> > temp_rings = tempBoard.get_rings(playerid);
+            pair <int,int> temp_ring = temp_rings[0];
+            tempBoard.set_at_position(temp_ring.first,temp_ring.second,0);
                 //output the string
         }
 
-        
 
-        
     }
     else{
         cout << "Invalid Move" << "\n";

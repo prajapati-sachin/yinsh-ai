@@ -26,9 +26,20 @@ public:
 
     int get_marker_count(int player);
 
-    vector<pair<int, int> > get_ring(int player);
+    vector<pair<int, int> > get_rings(int player);
 
-    int at_position(int i,int j);
+    int get_at_position(int i,int j);
+
+    void set_ring_count(int player,int value);
+
+    void set_marker_count(int player,int value);
+
+    void insert_ring(int player);
+
+    void delete_ring(int player);
+
+    void set_at_position(int i,int j,int value);
+
 
 
 
