@@ -591,9 +591,10 @@ int main(int argc, char** argv) {
     int player_id, board_size, time_limit;
     string move;
     // // Get input from server about game specifications
-    // cin >> player_id >> board_size >> time_limit;
+    cin >> player_id >> board_size >> time_limit;
     Board board = Board();
-    player_id=1;
+
+    // player_id=2;
 
 
     // for(int i=0;i<10;i++){
@@ -629,8 +630,11 @@ int main(int argc, char** argv) {
 
 
     if(player_id == 2) {
-        // Get other player's move
-        getline(cin, move);
+        // Get other player's move        
+        move.clear();
+        while(move.size()==0){
+        	getline(cin, move);
+    	}
         make_move(board, move, 1);   
         int ring_move=0;
         while(true) {
@@ -735,7 +739,10 @@ int main(int argc, char** argv) {
             
             /////////////////////////////////////////////////////////////////////////////////////////
             //GET OTHER PLAYERS MOVE
-            getline(cin, move);
+            move.clear();
+            while(move.size()==0){
+            	getline(cin, move);
+        	}
             make_move(board, move, 3-player_id); 
             if(ring_move==5){
             	if(board.isTerminal());
