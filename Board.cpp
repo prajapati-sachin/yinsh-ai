@@ -59,7 +59,9 @@ int Board::get_at_position(int i,int j){
 }
 
 bool Board::isTerminal(){
-	return ((ring_count[0]<=2)||(ring_count[1]<=2));
+	bool b1 = this->get_ring_count(1)<=2;
+	bool b2 = this->get_ring_count(2)<=2;
+	return b1 || b2;
 }
 
 void Board::set_at_position(int i,int j,int value){

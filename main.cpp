@@ -675,7 +675,7 @@ int main(int argc, char** argv) {
             	///////////////////////////////////////////////////////////////////////////////////////// 
 		        //MAKE THAT MOVE IN YOUR BOARD
 		        make_move(board, s_out, player_id);
-		        if(board.isTerminal());
+		        if(board.isTerminal())
             		break;
             }
             
@@ -684,8 +684,9 @@ int main(int argc, char** argv) {
             getline(cin, move);
             make_move(board, move, 1);
             if(ring_move==5){
-            	if(board.isTerminal());
+            	if(board.isTerminal()){
             		break;
+            	}
             }
         }
     }   
@@ -732,7 +733,7 @@ int main(int argc, char** argv) {
             	///////////////////////////////////////////////////////////////////////////////////////// 
 	            //MAKE THAT MOVE IN YOUR BOARD
 	            make_move(board, s_out, player_id);
-	            if(board.isTerminal());
+	            if(board.isTerminal())
 	            	break;
 
             }
@@ -745,7 +746,7 @@ int main(int argc, char** argv) {
         	}
             make_move(board, move, 3-player_id); 
             if(ring_move==5){
-            	if(board.isTerminal());
+            	if(board.isTerminal())
             		break;
             }
             
