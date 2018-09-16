@@ -124,6 +124,46 @@ void Board::set_at_position(int i,int j,int value){
 	board[i][j]=value;
 }
 
+vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
+    vector<pair< pair<int,int> , pair<int,int> > > ans;
+    for(int i=0;i<rings[player_id-1].size();i++){
+	    pair<int,int> curr_ring = (rings[player_id-1])[i];
+	    int x_change[] = {1,-1, 0, 0, 1,-1};
+	    int y_change[] = {0, 0, 1,-1,-1, 1};
+
+	    for(int j=0;j<6;j++){
+	        int x_cordinate=curr_ring.first+x_change[j];
+	        int y_cordinate=curr_ring.second+y_change[j];
+	        int c=0;
+	        while(board[x_cordinate][y_cordinate]!=-1 && x_cordinate>=0 && x_cordinate<11 && y_cordinate>=0 && y_cordinate<11 ){
+	            if(board[x_cordinate][y_cordinate]==0){
+	                if(c==0){
+	                    ans.push_back(make_pair(curr_ring,make_pair(x_cordinate, y_cordinate)));
+	                    x_cordinate+=x_change[j];
+	                    y_cordinate+=y_change[j];
+	                }else{
+	                    ans.push_back(make_pair(curr_ring,make_pair(x_cordinate, y_cordinate)));
+	                    break;
+	                }
+	            }
+	            else if(board[x_cordinate][y_cordinate]==1 || board[x_cordinate][y_cordinate]==2){
+	                x_cordinate+=x_change[j];
+	                y_cordinate+=y_change[j];
+	                c=1;
+	            }
+	            else if(board[x_cordinate][y_cordinate]==3 || board[x_cordinate][y_cordinate]==4){
+	                break;
+	            }
+	        }
+
+	    }
+
+	}
+
+	return ans;
+
+}
+
 int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit){
     int position=-1;
     for(int i=0;i<rings.size();i++){

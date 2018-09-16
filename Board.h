@@ -40,8 +40,7 @@ public:
 
     void set_at_position(int i,int j,int value);
 
-
-
+    vector<pair<pair<int,int>,pair<int,int> > > neighbour( int player_id );
 
 };
 
