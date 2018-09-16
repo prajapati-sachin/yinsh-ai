@@ -164,6 +164,35 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
 
 }
 
+
+int Board::evaluation( int player_id){
+    int eval=300;
+    for(int i=0;i<11;i++){
+        for(int j=0;j<11;j++){
+            if(player_id==1){
+                if(board[i][j]==3){
+                    eval-=100;
+                }
+                else if(board[i][j]==1){
+                    eval+=1;
+                }
+            }
+            else if(player_id==2){
+                if(board[i][j]==4){
+                    eval-=100;
+                }
+                else if(board[i][j]==2){
+                    eval+=1;
+                }
+            }
+        }
+    }
+    return eval;
+}
+
+
+
+
 int find_in_vector(vector<pair<int, int> > rings, pair<int, int> findit){
     int position=-1;
     for(int i=0;i<rings.size();i++){

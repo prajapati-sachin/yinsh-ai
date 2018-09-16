@@ -1480,7 +1480,7 @@ int main(int argc, char** argv) {
     // }
 
     // cout << "At center: " << board[5][5] << "\n";
-    // cout << "Ring: " << board[6][5] << "\n";
+    // cout << "Ring: "Can we feed 10 billion people on organic farming alone? << board[6][5] << "\n";
 
     return 0;
 }

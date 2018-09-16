@@ -9,7 +9,7 @@ board_convert b;
 vector<pair<int, int> > rings1;
 vector<pair<int, int> > rings2;
 vector<pair<int, int> > rings[2];
-
+stack<string> initial_moves;
 /*
 Not in board: -1
 Empty Position: 0
@@ -21,7 +21,20 @@ Blue Ring: 4  -> playerid 2
 
 
 
-
+void inital_moves_initialize(){
+    initial_moves.push("P 1 5");
+    initial_moves.push("P 1 1");
+    initial_moves.push("P 1 4");
+    initial_moves.push("P 1 3");
+    initial_moves.push("P 1 0");
+    initial_moves.push("P 2 11");
+    initial_moves.push("P 2 9");
+    initial_moves.push("P 2 7");
+    initial_moves.push("P 2 5");
+    initial_moves.push("P 2 3");
+    initial_moves.push("P 2 1");
+    initial_moves.push("P 0 0");
+}
 
 
 vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(Board tempBoard,int player_id){
@@ -190,13 +203,18 @@ void move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> coo
     }
 }
 
-
-
 void make_move(string move, int player_id){
-    if(move.at(0)=='P'){
+    vector<string> tokens;
+    stringstream stream1(move);
+    string temp;
+    while(stream1 >> temp){
+        tokens.push_back(temp);
+    }
+
+    if(tokens[0]=="P"){
         // place a ring..initial steps
-        int hexagon= move.at(2)-'0';
-        int points_in_hexagon= move.at(4)-'0';
+        int hexagon= stoi(tokens[1]);
+        int points_in_hexagon= stoi(tokens[2]);
         pair<int, int> coordinates_in_board = b.get_2dpoint(hexagon, points_in_hexagon);
         int value_at_board = board[coordinates_in_board.first][coordinates_in_board.second];        
         if(value_at_board==0){
@@ -217,336 +235,232 @@ void make_move(string move, int player_id){
         else{
             cout << "Invalid Move" << "\n";
         }
-    }
-    else if(move.at(0)=='S'){
-        if(move.length()<12){
-            //place a marker at position -> move a ring to new position     
-            int hexagon_marker = move.at(2)-'0';
-            int point_in_hexagon_for_marker = move.at(4)-'0';
-            int hexagon_ring = move.at(8)-'0';
-            int point_in_hexagon_for_ring = move.at(10)-'0';
-            pair<int, int> coordinates_for_marker = b.get_2dpoint(hexagon_marker, point_in_hexagon_for_marker);
-            pair<int, int> coordinates_for_ring = b.get_2dpoint(hexagon_ring, point_in_hexagon_for_ring);
-            if(player_id==1){
-                if(board[coordinates_for_marker.first][coordinates_for_marker.second]==3 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
-                    board[coordinates_for_marker.first][coordinates_for_marker.second]=1;
-                    board[coordinates_for_ring.first][coordinates_for_ring.second]=3;
-                    //change the position in rings1
-                    int find = find_in_vector(rings1, coordinates_for_marker);
-                    if(find!=-1){
-                        rings1.erase(rings1.begin() + find);
+    }  
+    else{
+        int i=0;
+        while(i<tokens.size()){
+            if(tokens[i]=="S"){
+                //place a marker at position -> move a ring to new position     
+                int hexagon_marker = stoi(tokens[i+1]);
+                int point_in_hexagon_for_marker = stoi(tokens[i+2]);
+                int hexagon_ring = stoi(tokens[i+4]);
+                int point_in_hexagon_for_ring =stoi(tokens[i+5]);
+                pair<int, int> coordinates_for_marker = b.get_2dpoint(hexagon_marker, point_in_hexagon_for_marker);
+                pair<int, int> coordinates_for_ring = b.get_2dpoint(hexagon_ring, point_in_hexagon_for_ring);
+                if(player_id==1){
+                    if(board[coordinates_for_marker.first][coordinates_for_marker.second]==3 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
+                        board[coordinates_for_marker.first][coordinates_for_marker.second]=1;
+                        board[coordinates_for_ring.first][coordinates_for_ring.second]=3;
+                        //change the position in rings1
+                        int find = find_in_vector(rings1, coordinates_for_marker);
+                        if(find!=-1){
+                            rings1.erase(rings1.begin() + find);
+                        }
+                        else{
+                            cout << "Invalid Move" << "\n";       
+                        }
+                        rings1.push_back(coordinates_for_ring);
                     }
-                    else{
-                        cout << "Invalid Move" << "\n";       
-                    }
-                    rings1.push_back(coordinates_for_ring);
-                }
-                // ALSO HAVE TO FLIP THE RINGS
-                if(coordinates_for_marker.first==coordinates_for_ring.first){
-                    //first coordinates x's are equal so change is in y direction
-                    if(coordinates_for_marker.second>coordinates_for_ring.second){
-                        int start = coordinates_for_marker.second-1;
-                        for(int i=start;i>coordinates_for_ring.second;i--){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
+                    // ALSO HAVE TO FLIP THE RINGS
+                    if(coordinates_for_marker.first==coordinates_for_ring.first){
+                        //first coordinates x's are equal so change is in y direction
+                        if(coordinates_for_marker.second>coordinates_for_ring.second){
+                            int start = coordinates_for_marker.second-1;
+                            for(int i=start;i>coordinates_for_ring.second;i--){
+                                if(board[coordinates_for_marker.first][i]==1){
+                                    board[coordinates_for_marker.first][i]=2;
+                                }
+                                else if(board[coordinates_for_marker.first][i]==2){
+                                    board[coordinates_for_marker.first][i]=1;
+                                }
                             }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
+                        }
+                        else{
+                            int start = coordinates_for_marker.second+1;
+                            for(int i=start;i<coordinates_for_ring.second;i++){
+                                if(board[coordinates_for_marker.first][i]==1){
+                                    board[coordinates_for_marker.first][i]=2;
+                                }
+                                else if(board[coordinates_for_marker.first][i]==2){
+                                    board[coordinates_for_marker.first][i]=1;
+                                }
+                            }
+                        }
+                    }
+                    else if(coordinates_for_marker.second==coordinates_for_ring.second){
+                        //second coordinates y's are equal so change is in x direction
+                        if(coordinates_for_marker.first>coordinates_for_ring.first){
+                            int start = coordinates_for_marker.first-1;
+                            for(int i=start;i>coordinates_for_ring.first;i--){
+                                if(board[i][coordinates_for_marker.second]==1){
+                                    board[i][coordinates_for_marker.second]=2;
+                                }
+                                else if(board[i][coordinates_for_marker.second]==2){
+                                    board[i][coordinates_for_marker.second]=1;
+                                }
+                            }
+                        }
+                        else{
+                            int start = coordinates_for_marker.first+1;
+                            for(int i=start;i<coordinates_for_ring.first;i++){
+                                if(board[i][coordinates_for_marker.second]==1){
+                                    board[i][coordinates_for_marker.second]=2;
+                                }
+                                else if(board[i][coordinates_for_marker.second]==2){
+                                    board[i][coordinates_for_marker.second]=1;
+                                }
                             }
                         }
                     }
                     else{
-                        int start = coordinates_for_marker.second+1;
-                        for(int i=start;i<coordinates_for_ring.second;i++){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
+                        //flips in third direction
+                        if(coordinates_for_marker.first>coordinates_for_ring.first){
+                            int start1 = coordinates_for_marker.first-1;
+                            int start2 = coordinates_for_marker.second+1;
+                            for(int i=start1;i>coordinates_for_ring.first;i--){
+                                if(board[i][start2]==1){
+                                    board[i][start2]=2;
+                                }
+                                else if(board[i][start2]==2){
+                                    board[i][start2]=1;
+                                }
+                                start2++;
                             }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
+                        }
+                        else{
+                            int start1 = coordinates_for_marker.first+1;
+                            int start2 = coordinates_for_marker.second-1;
+                            for(int i=start1;i<coordinates_for_ring.first;i++){
+                                if(board[i][start2]==1){
+                                    board[i][start2]=2;
+                                }
+                                else if(board[i][start2]==2){
+                                    board[i][start2]=1;
+                                }
+                                start2--;
                             }
                         }
                     }
+                    //
                 }
-                else if(coordinates_for_marker.second==coordinates_for_ring.second){
-                    //second coordinates y's are equal so change is in x direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start = coordinates_for_marker.first-1;
-                        for(int i=start;i>coordinates_for_ring.first;i--){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
+                
+                else if(player_id==2){
+                    if(board[coordinates_for_marker.first][coordinates_for_marker.second]==4 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
+                        //could also include check for a single line
+                        board[coordinates_for_marker.first][coordinates_for_marker.second]=2;
+                        board[coordinates_for_ring.first][coordinates_for_ring.second]=4;
+                        //change the position in rings1
+                        int find = find_in_vector(rings2, coordinates_for_marker);
+                        if(find!=-1){
+                            rings2.erase(rings2.begin() + find);
+                        }
+                        else{
+                            cout << "Invalid Move" << "\n";       
+                        }
+                        rings2.push_back(coordinates_for_ring);
+                    }
+                    // ALSO HAVE TO FLIP THE RINGS
+                    if(coordinates_for_marker.first==coordinates_for_ring.first){
+                        //first coordinates x's are equal so change is in y direction
+                        if(coordinates_for_marker.second>coordinates_for_ring.second){
+                            int start = coordinates_for_marker.second-1;
+                            for(int i=start;i>coordinates_for_ring.second;i--){
+                                if(board[coordinates_for_marker.first][i]==1){
+                                    board[coordinates_for_marker.first][i]=2;
+                                }
+                                else if(board[coordinates_for_marker.first][i]==2){
+                                    board[coordinates_for_marker.first][i]=1;
+                                }
                             }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
+                        }
+                        else{
+                            int start = coordinates_for_marker.second+1;
+                            for(int i=start;i<coordinates_for_ring.second;i++){
+                                if(board[coordinates_for_marker.first][i]==1){
+                                    board[coordinates_for_marker.first][i]=2;
+                                }
+                                else if(board[coordinates_for_marker.first][i]==2){
+                                    board[coordinates_for_marker.first][i]=1;
+                                }
+                            }
+                        }
+                    }
+                    else if(coordinates_for_marker.second==coordinates_for_ring.second){
+                        //second coordinates y's are equal so change is in x direction
+                        if(coordinates_for_marker.first>coordinates_for_ring.first){
+                            int start = coordinates_for_marker.first-1;
+                            for(int i=start;i>coordinates_for_ring.first;i--){
+                                if(board[i][coordinates_for_marker.second]==1){
+                                    board[i][coordinates_for_marker.second]=2;
+                                }
+                                else if(board[i][coordinates_for_marker.second]==2){
+                                    board[i][coordinates_for_marker.second]=1;
+                                }
+                            }
+                        }
+                        else{
+                            int start = coordinates_for_marker.first+1;
+                            for(int i=start;i<coordinates_for_ring.first;i++){
+                                if(board[i][coordinates_for_marker.second]==1){
+                                    board[i][coordinates_for_marker.second]=2;
+                                }
+                                else if(board[i][coordinates_for_marker.second]==2){
+                                    board[i][coordinates_for_marker.second]=1;
+                                }
                             }
                         }
                     }
                     else{
-                        int start = coordinates_for_marker.first+1;
-                        for(int i=start;i<coordinates_for_ring.first;i++){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
+                        //flips in third direction
+                        if(coordinates_for_marker.first>coordinates_for_ring.first){
+                            int start1 = coordinates_for_marker.first-1;
+                            int start2 = coordinates_for_marker.second+1;
+                            for(int i=start1;i>coordinates_for_ring.first;i--){
+                                if(board[i][start2]==1){
+                                    board[i][start2]=2;
+                                }
+                                else if(board[i][start2]==2){
+                                    board[i][start2]=1;
+                                }
+                                start2++;
                             }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
+                        }
+                        else{
+                            int start1 = coordinates_for_marker.first+1;
+                            int start2 = coordinates_for_marker.second-1;
+                            for(int i=start1;i<coordinates_for_ring.first;i++){
+                                if(board[i][start2]==1){
+                                    board[i][start2]=2;
+                                }
+                                else if(board[i][start2]==2){
+                                    board[i][start2]=1;
+                                }
+                                start2--;
                             }
                         }
                     }
+                    //
                 }
+                
                 else{
-                    //flips in third direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start1 = coordinates_for_marker.first-1;
-                        int start2 = coordinates_for_marker.second+1;
-                        for(int i=start1;i>coordinates_for_ring.first;i--){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2++;
-                        }
-                    }
-                    else{
-                        int start1 = coordinates_for_marker.first+1;
-                        int start2 = coordinates_for_marker.second-1;
-                        for(int i=start1;i<coordinates_for_ring.first;i++){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2--;
-                        }
-                    }
+                    cout << "Invalid Move" << "\n";    
                 }
-                //
+                i+=6;
             }
-            
-            else if(player_id==2){
-                if(board[coordinates_for_marker.first][coordinates_for_marker.second]==4 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
-                    //could also include check for a single line
-                    board[coordinates_for_marker.first][coordinates_for_marker.second]=2;
-                    board[coordinates_for_ring.first][coordinates_for_ring.second]=4;
-                    //change the position in rings1
-                    int find = find_in_vector(rings2, coordinates_for_marker);
-                    if(find!=-1){
-                        rings2.erase(rings2.begin() + find);
-                    }
-                    else{
-                        cout << "Invalid Move" << "\n";       
-                    }
-                    rings2.push_back(coordinates_for_ring);
-                }
-                // ALSO HAVE TO FLIP THE RINGS
-                if(coordinates_for_marker.first==coordinates_for_ring.first){
-                    //first coordinates x's are equal so change is in y direction
-                    if(coordinates_for_marker.second>coordinates_for_ring.second){
-                        int start = coordinates_for_marker.second-1;
-                        for(int i=start;i>coordinates_for_ring.second;i--){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.second+1;
-                        for(int i=start;i<coordinates_for_ring.second;i++){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                }
-                else if(coordinates_for_marker.second==coordinates_for_ring.second){
-                    //second coordinates y's are equal so change is in x direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start = coordinates_for_marker.first-1;
-                        for(int i=start;i>coordinates_for_ring.first;i--){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.first+1;
-                        for(int i=start;i<coordinates_for_ring.first;i++){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                }
-                else{
-                    //flips in third direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start1 = coordinates_for_marker.first-1;
-                        int start2 = coordinates_for_marker.second+1;
-                        for(int i=start1;i>coordinates_for_ring.first;i--){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2++;
-                        }
-                    }
-                    else{
-                        int start1 = coordinates_for_marker.first+1;
-                        int start2 = coordinates_for_marker.second-1;
-                        for(int i=start1;i<coordinates_for_ring.first;i++){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2--;
-                        }
-                    }
-                }
-                //
-            }
-            
-            else{
-                cout << "Invalid Move" << "\n";    
-            }
+            else if (tokens[i]=="RS"){
+                int hexagon_marker_removal_start= stoi(tokens[i+1]);
+                int point_in_hexagon_marker_removal_start= stoi(tokens[i+2]);
+                int hexagon_marker_removal_end= stoi(tokens[i+4]);
+                int point_in_hexagon_marker_removal_end= stoi(tokens[i+5]);
+                int hexagon_ring_removal = stoi(tokens[i+7]);
+                int points_in_hexagon_ring_removal = stoi(tokens[i+8]);
 
-        }
-        
-        else{
-            //place a marker at a position -> move a ring to a given position -> remove a row of 5 markers -> remove a ring 
-            int hexagon_marker = move.at(2)-'0';
-            int point_in_hexagon_for_marker = move.at(4)-'0';
-            int hexagon_ring = move.at(8)-'0';
-            int point_in_hexagon_for_ring = move.at(10)-'0';
-            int hexagon_marker_removal_start= move.at(12)-'0';
-            int point_in_hexagon_marker_removal_start= move.at(14)-'0';
-            int hexagon_marker_removal_end= move.at(18)-'0';
-            int point_in_hexagon_marker_removal_end= move.at(20)-'0';
-            int hexagon_ring_removal = move.at(24)-'0';
-            int points_in_hexagon_ring_removal = move.at(26)-'0';
-            
-            pair<int, int> coordinates_for_marker = b.get_2dpoint(hexagon_marker, point_in_hexagon_for_marker);
-            pair<int, int> coordinates_for_ring = b.get_2dpoint(hexagon_ring, point_in_hexagon_for_ring);
+                pair<int, int> coordinates_marker_removal_start = b.get_2dpoint(hexagon_marker_removal_start, point_in_hexagon_marker_removal_start);
+                pair<int, int> coordinates_marker_removal_end = b.get_2dpoint(hexagon_marker_removal_end, point_in_hexagon_marker_removal_end);
 
-            pair<int, int> coordinates_marker_removal_start = b.get_2dpoint(hexagon_marker_removal_start, point_in_hexagon_marker_removal_start);
-            pair<int, int> coordinates_marker_removal_end = b.get_2dpoint(hexagon_marker_removal_end, point_in_hexagon_marker_removal_end);
+                pair<int, int> final_ring_removal = b.get_2dpoint(hexagon_ring_removal, points_in_hexagon_ring_removal);
 
-            pair<int, int> final_ring_removal = b.get_2dpoint(hexagon_ring_removal, points_in_hexagon_ring_removal);
-
-            if(player_id==1){
-                //MOVE THE RING AND PLACE THE MARKER
-                if(board[coordinates_for_marker.first][coordinates_for_marker.second]==3 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
-                    //could also include check for a single line
-                    board[coordinates_for_marker.first][coordinates_for_marker.second]=1;
-                    board[coordinates_for_ring.first][coordinates_for_ring.second]=3;
-                    //change the position in rings1
-                    int find = find_in_vector(rings1, coordinates_for_marker);
-                    if(find!=-1){
-                        rings1.erase(rings1.begin() + find);
-                    }
-                    else{
-                        cout << "Invalid Move" << "\n";       
-                    }
-                    rings1.push_back(coordinates_for_ring);
-                }
-                //
-                // ALSO HAVE TO FLIP THE RINGS------------------------------------------
-                if(coordinates_for_marker.first==coordinates_for_ring.first){
-                    //first coordinates x's are equal so change is in y direction
-                    if(coordinates_for_marker.second>coordinates_for_ring.second){
-                        int start = coordinates_for_marker.second-1;
-                        for(int i=start;i>coordinates_for_ring.second;i--){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.second+1;
-                        for(int i=start;i<coordinates_for_ring.second;i++){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                }
-                else if(coordinates_for_marker.second==coordinates_for_ring.second){
-                    //second coordinates y's are equal so change is in x direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start = coordinates_for_marker.first-1;
-                        for(int i=start;i>coordinates_for_ring.first;i--){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.first+1;
-                        for(int i=start;i<coordinates_for_ring.first;i++){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                }
-                else{
-                    //flips in third direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start1 = coordinates_for_marker.first-1;
-                        int start2 = coordinates_for_marker.second+1;
-                        for(int i=start1;i>coordinates_for_ring.first;i--){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2++;
-                        }
-                    }
-                    else{
-                        int start1 = coordinates_for_marker.first+1;
-                        int start2 = coordinates_for_marker.second-1;
-                        for(int i=start1;i<coordinates_for_ring.first;i++){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2--;
-                        }
-                    }
-                }
-                //
+                if(player_id==1){
                 // REMOVE THE ROW
                     if(coordinates_marker_removal_start.first==coordinates_marker_removal_end.first){
                         //x coordinates of both are same hence remove along y direction
@@ -618,194 +532,162 @@ void make_move(string move, int player_id){
                         cout << "Remove Ring Error" << "\n";
                     }
                 //
-            }
+                }
             
-            else if(player_id==2){
-                //MOVE THE RING AND PLACE THE MARKER
-                if(board[coordinates_for_marker.first][coordinates_for_marker.second]==3 && board[coordinates_for_ring.first][coordinates_for_ring.second]==0){
-                    //could also include check for a single line
-                    board[coordinates_for_marker.first][coordinates_for_marker.second]=1;
-                    board[coordinates_for_ring.first][coordinates_for_ring.second]=3;
-                    //change the position in rings1
-                    int find = find_in_vector(rings1, coordinates_for_marker);
-                    if(find!=-1){
-                        rings1.erase(rings1.begin() + find);
-                    }
-                    else{
-                        cout << "Invalid Move" << "\n";       
-                    }
-                    rings1.push_back(coordinates_for_ring);
+                else if(player_id==2){
+                
+                    // REMOVE THE ROW
+                        if(coordinates_marker_removal_start.first==coordinates_marker_removal_end.first){
+                            //x coordinates of both are same hence remove along y direction
+                            if(coordinates_marker_removal_start.second>coordinates_marker_removal_end.second){
+                                int counter = coordinates_marker_removal_start.second;
+                                while(counter!=coordinates_marker_removal_end.second){
+                                    board[coordinates_marker_removal_start.first][counter]=0;
+                                    counter--;
+                                }
+                                board[coordinates_marker_removal_start.first][counter]=0;
+                            }
+                            else{
+                                int counter = coordinates_marker_removal_start.second;
+                                while(counter!=coordinates_marker_removal_end.second){
+                                    board[coordinates_marker_removal_start.first][counter]=0;
+                                    counter++;
+                                }
+                                board[coordinates_marker_removal_start.first][counter]=0;
+                            }
+                        }
+                        else if(coordinates_marker_removal_start.second==coordinates_marker_removal_end.second){
+                            //y coordinates of both are same hence remove along x direction
+                            if(coordinates_marker_removal_start.first>coordinates_marker_removal_end.first){
+                                int counter = coordinates_marker_removal_start.first;
+                                while(counter!=coordinates_marker_removal_end.first){
+                                    board[counter][coordinates_marker_removal_start.second]=0;
+                                    counter--;
+                                }
+                                board[counter][coordinates_marker_removal_start.second]=0;
+                            }
+                            else{
+                                int counter = coordinates_marker_removal_start.first;
+                                while(counter!=coordinates_marker_removal_end.first){
+                                    board[counter][coordinates_marker_removal_start.second]=0;
+                                    counter++;
+                                }
+                                board[counter][coordinates_marker_removal_start.second]=0;
+                            }
+                        }
+                        else{
+                            //remove along third direction
+                            if(coordinates_marker_removal_start.first>coordinates_marker_removal_end.first){
+                                int counter1 = coordinates_marker_removal_start.first;
+                                int counter2 = coordinates_marker_removal_start.second;
+                                while(counter1!=coordinates_marker_removal_end.first){
+                                    board[counter1][counter2]=0;
+                                    counter1--;
+                                    counter2++;
+                                }
+                                board[counter1][counter2]=0;
+                            }
+                            else{
+                                int counter1 = coordinates_marker_removal_start.first;
+                                int counter2 = coordinates_marker_removal_start.second;
+                                while(counter1!=coordinates_marker_removal_end.first){
+                                    board[counter1][counter2]=0;
+                                    counter1++;
+                                    counter2--;
+                                }
+                                board[counter1][counter2]=0;
+                            }
+                        }
+                    //
+                    // REMOVE THE RING
+                        if(board[final_ring_removal.first][final_ring_removal.second]==4){
+                            board[final_ring_removal.first][final_ring_removal.second]==0;
+                        }
+                        else{
+                            cout << "Remove Ring Error" << "\n";
+                        }
+                    //
                 }
-                //
-                // ALSO HAVE TO FLIP THE RINGS------------------------------------------
-                if(coordinates_for_marker.first==coordinates_for_ring.first){
-                    //first coordinates x's are equal so change is in y direction
-                    if(coordinates_for_marker.second>coordinates_for_ring.second){
-                        int start = coordinates_for_marker.second-1;
-                        for(int i=start;i>coordinates_for_ring.second;i--){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.second+1;
-                        for(int i=start;i<coordinates_for_ring.second;i++){
-                            if(board[coordinates_for_marker.first][i]==1){
-                                board[coordinates_for_marker.first][i]=2;
-                            }
-                            else if(board[coordinates_for_marker.first][i]==2){
-                                board[coordinates_for_marker.first][i]=1;
-                            }
-                        }
-                    }
-                }
-                else if(coordinates_for_marker.second==coordinates_for_ring.second){
-                    //second coordinates y's are equal so change is in x direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start = coordinates_for_marker.first-1;
-                        for(int i=start;i>coordinates_for_ring.first;i--){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                    else{
-                        int start = coordinates_for_marker.first+1;
-                        for(int i=start;i<coordinates_for_ring.first;i++){
-                            if(board[i][coordinates_for_marker.second]==1){
-                                board[i][coordinates_for_marker.second]=2;
-                            }
-                            else if(board[i][coordinates_for_marker.second]==2){
-                                board[i][coordinates_for_marker.second]=1;
-                            }
-                        }
-                    }
-                }
+                
                 else{
-                    //flips in third direction
-                    if(coordinates_for_marker.first>coordinates_for_ring.first){
-                        int start1 = coordinates_for_marker.first-1;
-                        int start2 = coordinates_for_marker.second+1;
-                        for(int i=start1;i>coordinates_for_ring.first;i--){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2++;
-                        }
-                    }
-                    else{
-                        int start1 = coordinates_for_marker.first+1;
-                        int start2 = coordinates_for_marker.second-1;
-                        for(int i=start1;i<coordinates_for_ring.first;i++){
-                            if(board[i][start2]==1){
-                                board[i][start2]=2;
-                            }
-                            else if(board[i][start2]==2){
-                                board[i][start2]=1;
-                            }
-                            start2--;
-                        }
-                    }
+                    cout << "Invalid Move" << "\n";    
                 }
-                //
-                // REMOVE THE ROW
-                    if(coordinates_marker_removal_start.first==coordinates_marker_removal_end.first){
-                        //x coordinates of both are same hence remove along y direction
-                        if(coordinates_marker_removal_start.second>coordinates_marker_removal_end.second){
-                            int counter = coordinates_marker_removal_start.second;
-                            while(counter!=coordinates_marker_removal_end.second){
-                                board[coordinates_marker_removal_start.first][counter]=0;
-                                counter--;
-                            }
-                            board[coordinates_marker_removal_start.first][counter]=0;
-                        }
-                        else{
-                            int counter = coordinates_marker_removal_start.second;
-                            while(counter!=coordinates_marker_removal_end.second){
-                                board[coordinates_marker_removal_start.first][counter]=0;
-                                counter++;
-                            }
-                            board[coordinates_marker_removal_start.first][counter]=0;
-                        }
-                    }
-                    else if(coordinates_marker_removal_start.second==coordinates_marker_removal_end.second){
-                        //y coordinates of both are same hence remove along x direction
-                        if(coordinates_marker_removal_start.first>coordinates_marker_removal_end.first){
-                            int counter = coordinates_marker_removal_start.first;
-                            while(counter!=coordinates_marker_removal_end.first){
-                                board[counter][coordinates_marker_removal_start.second]=0;
-                                counter--;
-                            }
-                            board[counter][coordinates_marker_removal_start.second]=0;
-                        }
-                        else{
-                            int counter = coordinates_marker_removal_start.first;
-                            while(counter!=coordinates_marker_removal_end.first){
-                                board[counter][coordinates_marker_removal_start.second]=0;
-                                counter++;
-                            }
-                            board[counter][coordinates_marker_removal_start.second]=0;
-                        }
-                    }
-                    else{
-                        //remove along third direction
-                        if(coordinates_marker_removal_start.first>coordinates_marker_removal_end.first){
-                            int counter1 = coordinates_marker_removal_start.first;
-                            int counter2 = coordinates_marker_removal_start.second;
-                            while(counter1!=coordinates_marker_removal_end.first){
-                                board[counter1][counter2]=0;
-                                counter1--;
-                                counter2++;
-                            }
-                            board[counter1][counter2]=0;
-                        }
-                        else{
-                            int counter1 = coordinates_marker_removal_start.first;
-                            int counter2 = coordinates_marker_removal_start.second;
-                            while(counter1!=coordinates_marker_removal_end.first){
-                                board[counter1][counter2]=0;
-                                counter1++;
-                                counter2--;
-                            }
-                            board[counter1][counter2]=0;
-                        }
-                    }
-                //
-                // REMOVE THE RING
-                    if(board[final_ring_removal.first][final_ring_removal.second]==4){
-                        board[final_ring_removal.first][final_ring_removal.second]==0;
-                    }
-                    else{
-                        cout << "Remove Ring Error" << "\n";
-                    }
-                //
-            }
-            
-            else{
-                cout << "Invalid Move" << "\n";    
-            }
 
+                i+=9;
 
+            }
         }
-    }
-    else{
-        cout << "Invalid move" << endl;
     }
 }
 
+pair<pair<int,int>,pair<int,int> > alpha_beta_search(Board tempBoard,int player_id){
+	int depth=1;
+	return Max_value_action(tempBoard,MIN_NUM,MAX_NUM,depth,player_id);
+}
 
+pair<pair<int,int>,pair<int,int> > Max_value_action(Board tempBoard, int alpha, int beta, int depth, int player_id){
+	int v = MIN_NUM;
+	pair<pair<int,int>,pair<int,int> > move;
+	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
+	for(int i=0;i<successors.size();i++){
+		Board copy = Board(tempBoard);
+		string str = "aa";
+		pair<int,int> coordinates_for_marker = successors[i].first;
+		pair<int,int> coordinates_for_ring = successors[i].second;
+		move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
+		v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
+		if(Min_value(copy,alpha,beta,depth-1,3-player_id)>v){
+			v=Min_value(copy,alpha,beta,depth-1,3-player_id);
+			move=make_pair(coordinates_for_marker,coordinates_for_ring);
+		}
+		if(v > beta)
+			return move;
+		alpha = max(alpha,v);
+	}
+	return move;
+}
 
+int Max_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
+	if(depth==0||tempBoard.isTerminal())
+		return tempBoard.evaluation_function();
+	else{
+		int v = MIN_NUM;
+		vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
+		for(int i=0;i<successors.size();i++){
+			Board copy = Board(tempBoard);
+			string str = "aa";
+			pair<int,int> coordinates_for_marker = successors[i].first;
+			pair<int,int> coordinates_for_ring = successors[i].second;
+			move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
+			v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
+			if(v > beta)
+				return v;
+			alpha = max(alpha,v);
+		}
+		return v;
+	}
+}
 
+int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
+	if(depth==0||tempBoard.isTerminal())
+		return tempBoard.evaluation_function();
+	else{
+		int v = MAX_NUM;
+		vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
+		for(int i=0;i<successors.size();i++){
+			Board copy = Board(tempBoard);
+			string str = "aa";
+			pair<int,int> coordinates_for_marker = successors[i].first;
+			pair<int,int> coordinates_for_ring = successors[i].second;
+			move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
+			v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
+			if(v < alpha)
+				return v;
+			beta = min(beta,v);
+		}
+		return v;
+	}
+}
 
 // Sample C++ Code 
 int main(int argc, char** argv) {
@@ -813,30 +695,92 @@ int main(int argc, char** argv) {
     // cout << sizeof(b) << "\n";
     // cout << "num of hexagons"<< b.no_of_hexagons() << "\n";
     // cout << "num of points in hex 2" << b.points_in_hexagon_i(2) << "\n";
+    initialize_board();
+    inital_moves_initialize();
 
+    // cout << "alright" << "\n";
     
-    // int player_id, board_size, time_limit;
+    int player_id, board_size, time_limit;
+    string move;
     // // Get input from server about game specifications
     // cin >> player_id >> board_size >> time_limit;
 
-    // int player_id=1;
-    // if(player_id == 2) {
-    //     // Get other player's move
-    //     getline(cin, move); 
-        
-    //     while(true) {
-    //         cout<<"P 1 0"<<endl;
-    //         cin>>move;
-    //     }
-    // }   
-    // else if(player_id == 1) {
-    //     while(true) {
-    //         // cout<<"P 0 0"<<endl;
-    //         // /cin>>move;
-    //         getline(cin, move);
-    //         make_move(move, 1); 
-    //     }
-    // }
+    player_id=1;
+    if(player_id == 2) {
+        // Get other player's move
+        getline(cin, move); 
+        make_move(move, 1);   
+        int ring_move=0;
+        while(true) {
+            //OUTPUT YOUR MOVE
+            if(ring_move<5){
+                string temp = initial_moves.top();
+                initial_moves.pop();
+                pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+                if(board[inboard.first][inboard.second]==0){
+                    // place the ring
+                    board[inboard.first][inboard.second]=4;
+                    //output
+                    cout << temp << "\n";
+                }
+                else{
+                    ring_move--;
+                }
+                //SIMPLY PLACE A RING                
+                ring_move++;
+            }
+            else{
+                //OUTPUT MAIN MOVE
+            }
+            ///////////////////////////////////////////////////////////////////////////////////////// 
+            //MAKE THAT MOVE IN YOUR BOARD
+            
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //GET OTHER PLAYERS MOVE
+            getline(cin, move);
+            make_move(move, 1);
+        }
+    }   
+    else if(player_id == 1) {
+        int ring_move=0;
+                        // cout << "I am here\n"; 
+
+        while(true){
+            //OUTPUT YOUR MOVE
+            if(ring_move<5){
+                // cout << "I am here\n"; 
+                string temp = initial_moves.top();
+                initial_moves.pop();
+                pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+                if(board[inboard.first][inboard.second]==0){
+                    // place the ring
+                    board[inboard.first][inboard.second]=3;
+                    //output
+                    cout << temp << "\n";
+                }
+                else{
+                    // ring_move--;
+                    continue;
+                }
+                //SIMPLY PLACE A RING                
+                ring_move++;
+            }
+            else{
+                //OUTPUT MAIN MOVE
+                
+            }
+            ///////////////////////////////////////////////////////////////////////////////////////// 
+            //MAKE THAT MOVE IN YOUR BOARD
+            
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //GET OTHER PLAYERS MOVE
+            getline(cin, move);
+            make_move(move, 2); 
+            
+        }
+    }
 
     // make_move("P 0 0", 1);
     // make_move("S 0 0 M 1 1", 1);
@@ -850,45 +794,6 @@ int main(int argc, char** argv) {
 
     // cout << "At center: " << board[5][5] << "\n";
     // cout << "Ring: " << board[6][5] << "\n";
-
-    pair<int,int> p = make_pair(5,5);
-    pair<int,int> q = make_pair(9,5);
-    string str="as";
-    // p = make_pair(5,5);
-    // place_ring_in_board(p,1,board, rings, str);
-    // cout<<(rings[0]).size()<<endl;
-    // board[6][5]=2;
-    // board[7][5]=2;
-    // board[8][5]=2;
-    // board[4][5]=1;
-    Board board = Board();
-    p = make_pair(5,5);
-    place_ring_in_board(p,1,board,str);
-    p = make_pair(9,5);
-    place_ring_in_board(p,2,board,str);
-    // cout<<"board[5][5] : "<<board.get_at_position(5,5)<<endl;
-    p = make_pair(5,5);q = make_pair(6,5);
-    move_ring_in_board(p,q,1,board,str);
-    p = make_pair(6,5);q = make_pair(7,5);
-    move_ring_in_board(p,q,1,board,str);
-    p = make_pair(7,5);q = make_pair(8,5);
-    move_ring_in_board(p,q,1,board,str);
-    p = make_pair(8,5);q = make_pair(8,6);
-    move_ring_in_board(p,q,1,board,str);
-    p = make_pair(9,5);q = make_pair(4,5);
-    move_ring_in_board(p,q,2,board,str);
-    // p = make_pair(5,5);
-    // q = make_pair(9,5);
-    // move_ring_in_board(p,q,1,board,rings, str);
-
-    // for(int i=0;i<6;i++){
-    // 	cout<<"board[4+i][5] : "<<board.get_at_position(4+i,5)<<endl;
-    // }
-
-
-
-
-
 
     return 0;
 }
