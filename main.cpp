@@ -591,9 +591,9 @@ int main(int argc, char** argv) {
     int player_id, board_size, time_limit;
     string move;
     // // Get input from server about game specifications
-    cin >> player_id >> board_size >> time_limit;
+    // cin >> player_id >> board_size >> time_limit;
     Board board = Board();
-    //player_id=1;
+    player_id=1;
 
 
     // for(int i=0;i<10;i++){
@@ -668,18 +668,21 @@ int main(int argc, char** argv) {
                 s_out = alpha_beta_search(board,player_id);
                 s_out.pop_back();//delete last space
                 cout<<s_out<<endl;
+            	///////////////////////////////////////////////////////////////////////////////////////// 
+		        //MAKE THAT MOVE IN YOUR BOARD
+		        make_move(board, s_out, player_id);
+		        if(board.isTerminal());
+            		break;
             }
-            ///////////////////////////////////////////////////////////////////////////////////////// 
-            //MAKE THAT MOVE IN YOUR BOARD
-            make_move(board, s_out, player_id);
-            if(board.isTerminal());
-            	break;
+            
             /////////////////////////////////////////////////////////////////////////////////////////
             //GET OTHER PLAYERS MOVE
             getline(cin, move);
             make_move(board, move, 1);
-            if(board.isTerminal());
-            	break;
+            if(ring_move==5){
+            	if(board.isTerminal());
+            		break;
+            }
         }
     }   
     else if(player_id == 1) {
@@ -722,19 +725,22 @@ int main(int argc, char** argv) {
                 s_out = alpha_beta_search(board,player_id);
                 s_out.pop_back();//delete last space
                 cout<<s_out<<endl;
-                
+            	///////////////////////////////////////////////////////////////////////////////////////// 
+	            //MAKE THAT MOVE IN YOUR BOARD
+	            make_move(board, s_out, player_id);
+	            if(board.isTerminal());
+	            	break;
+
             }
-            ///////////////////////////////////////////////////////////////////////////////////////// 
-            //MAKE THAT MOVE IN YOUR BOARD
-            make_move(board, s_out, player_id);
-            if(board.isTerminal());
-            	break;
+            
             /////////////////////////////////////////////////////////////////////////////////////////
             //GET OTHER PLAYERS MOVE
             getline(cin, move);
             make_move(board, move, 3-player_id); 
-            if(board.isTerminal());
-            	break;
+            if(ring_move==5){
+            	if(board.isTerminal());
+            		break;
+            }
             
         }
     }
