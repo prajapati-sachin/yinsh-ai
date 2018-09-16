@@ -259,12 +259,12 @@ void make_move(Board &tempBoard, string move, int player_id){
     }
 }
 
-pair<pair<int,int>,pair<int,int> > alpha_beta_search(Board tempBoard,int player_id){
+pair<pair<int,int>,pair<int,int> > alpha_beta_search(Board &tempBoard,int player_id){
 	int depth=1;
 	return Max_value_action(tempBoard,INT_MIN,INT_MAX,depth,player_id);
 }
 
-pair<pair<int,int>,pair<int,int> > Max_value_action(Board tempBoard, int alpha, int beta, int depth, int player_id){
+pair<pair<int,int>,pair<int,int> > Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
 	pair<pair<int,int>,pair<int,int> > move;
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
@@ -285,7 +285,7 @@ pair<pair<int,int>,pair<int,int> > Max_value_action(Board tempBoard, int alpha, 
 	return move;
 }
 
-int Max_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
+int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	if(depth==0||tempBoard.isTerminal())
 		return tempBoard.evaluation_function();
 	else{
