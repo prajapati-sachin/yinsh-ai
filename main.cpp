@@ -60,6 +60,8 @@ vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(Board tempBoar
                     if(count==5){
                         end=make_pair(x_const,y_const);
                         removing_markers.push_back(make_pair(start,end));
+                        x_const-=5*x_change[i];
+                		y_const-=5*y_change[i];
                         
                     }
                 }else{
@@ -273,7 +275,7 @@ pair<pair<int,int>,pair<int,int> > Max_value_action(Board &tempBoard, int alpha,
 		string str = "aa";
 		pair<int,int> coordinates_for_marker = successors[i].first;
 		pair<int,int> coordinates_for_ring = successors[i].second;
-		move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
+		move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str,true);
 		if(Min_value(copy,alpha,beta,depth-1,3-player_id)>v){
 			v=Min_value(copy,alpha,beta,depth-1,3-player_id);
 			move=make_pair(coordinates_for_marker,coordinates_for_ring);
@@ -296,11 +298,11 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 			string str = "aa";
 			pair<int,int> coordinates_for_marker = successors[i].first;
 			pair<int,int> coordinates_for_ring = successors[i].second;
-			move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
-			v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
+			move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,str,&v,&alpha,&beta,depth);
+			//v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
 			if(v > beta)
 				return v;
-			alpha = max(alpha,v);
+			// alpha = max(alpha,v);
 		}
 		return v;
 	}
@@ -317,15 +319,167 @@ int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
 			string str = "aa";
 			pair<int,int> coordinates_for_marker = successors[i].first;
 			pair<int,int> coordinates_for_ring = successors[i].second;
-			move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
-			v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
+			move_ring_in_board_min(coordinates_for_marker,coordinates_for_ring,player_id,copy,str,&v,&alpha,&beta,depth);
+			//v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
 			if(v < alpha)
 				return v;
-			beta = min(beta,v);
+			//beta = min(beta,v);
 		}
 		return v;
 	}
 }
+
+void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board &tempBoard, string str,int &v,int &alpha,int &beta,int depth){
+    if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
+        move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,tempBoard,str);
+        //checking if ring would be removed or not if it is my move
+   
+        vector< pair < pair <int,int>, pair <int,int> > > removing_markers = find_removing_markers(tempBoard,player_id);//markers to be removed
+        //cout<<"size: "<<removing_markers.size()<<endl;
+        if(find_removing_markers.size()==0){
+            v = max(v,Min_value(tempBoard,alpha,beta,depth-1,3-player_id));
+			if(v > beta)
+				return v;
+			alpha = max(alpha,v);
+        }
+        else{
+	        for(int i=0;i<removing_markers.size();i++){
+	        	for(int j=0;j<tempBoard.get_ring_count(player_id);j++){
+	        		Board copy_tempBoard = Board(tempBoard);
+	        		remove_markers(copy_tempBoard,removing_markers[i]);
+	        		vector<pair <int,int> > temp_rings = copy_tempBoard.get_rings(player_id);
+		            pair <int,int> temp_ring = temp_rings[j];
+		            remove_ring(copy_tempBoard,temp_ring);
+                    removing_markers = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
+                    if(find_removing_markers.size()==0){
+			            v = max(v,Min_value(copy_tempBoard,alpha,beta,depth-1,3-player_id));
+						if(v > beta)
+							return v;
+						alpha = max(alpha,v);
+					}
+					else{
+					    for(int i=0;i<removing_markers.size();i++){
+			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
+				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
+				        		remove_markers(copy_copy_tempBoard,removing_markers[i]);
+				        		vector<pair <int,int> > temp_rings = copy_copy_tempBoard.get_rings(player_id);
+					            pair <int,int> temp_ring = temp_rings[j];
+					            remove_ring(copy_copy_tempBoard,temp_ring);
+			                    removing_markers = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
+                                if(find_removing_markers.size()==0){
+						            v = max(v,Min_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id));
+									if(v > beta)
+										return v;
+									alpha = max(alpha,v);
+								}else{
+									for(int i=0;i<removing_markers.size();i++){
+										for(int j=0;j<copy_copy_tempBoard.get_ring_count(player_id);j++){
+											Board copy_copy_copy_tempBoard = Board(copy_copy_tempBoard);
+											remove_markers(copy_copy_copy_tempBoard,removing_markers[i]);
+											vector<pair <int,int> > temp_rings = copy_copy_copy_tempBoard.get_rings(player_id);
+									        pair <int,int> temp_ring = temp_rings[j];
+									        remove_ring(copy_copy_copy_tempBoard,temp_ring);
+						                    v = max(v,Min_value(copy_copy_copy_tempBoard,alpha,beta,depth-1,3-player_id));
+						        			if(v > beta)
+						        				return v;
+						        			alpha = max(alpha,v);
+									    }
+									}
+
+								}
+							}
+						}
+
+					}
+					
+	        	}
+	        }
+	    }
+
+	    
+
+    }
+    else{
+        cout << "Invalid Move" << "\n";
+    }
+}
+
+void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board &tempBoard, string str,int &v,int &alpha,int &beta,int depth){
+    if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
+        move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,tempBoard,str);
+        //checking if ring would be removed or not if it is my move
+   
+        vector< pair < pair <int,int>, pair <int,int> > > removing_markers = find_removing_markers(tempBoard,player_id);//markers to be removed
+        //cout<<"size: "<<removing_markers.size()<<endl;
+        if(find_removing_markers.size()==0){
+            v = min(v,Max_value(tempBoard,alpha,beta,depth-1,3-player_id));
+			if(v < alpha)
+				return v;
+			beta = min(beta,v);
+        }
+        else{
+	        for(int i=0;i<removing_markers.size();i++){
+	        	for(int j=0;j<tempBoard.get_ring_count(player_id);j++){
+	        		Board copy_tempBoard = Board(tempBoard);
+	        		remove_markers(copy_tempBoard,removing_markers[i]);
+	        		vector<pair <int,int> > temp_rings = copy_tempBoard.get_rings(player_id);
+		            pair <int,int> temp_ring = temp_rings[j];
+		            remove_ring(copy_tempBoard,temp_ring);
+                    removing_markers = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
+                    if(find_removing_markers.size()==0){
+                        v = min(v,Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id));
+            			if(v < alpha)
+            				return v;
+            			beta = min(beta,v);
+					}
+					else{
+					    for(int i=0;i<removing_markers.size();i++){
+			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
+				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
+				        		remove_markers(copy_copy_tempBoard,removing_markers[i]);
+				        		vector<pair <int,int> > temp_rings = copy_copy_tempBoard.get_rings(player_id);
+					            pair <int,int> temp_ring = temp_rings[j];
+					            remove_ring(copy_copy_tempBoard,temp_ring);
+			                    removing_markers = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
+                                if(find_removing_markers.size()==0){
+			                        v = min(v,Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id));
+			            			if(v < alpha)
+			            				return v;
+			            			beta = min(beta,v);
+								}else{
+									for(int i=0;i<removing_markers.size();i++){
+										for(int j=0;j<copy_copy_tempBoard.get_ring_count(player_id);j++){
+											Board copy_copy_copy_tempBoard = Board(copy_copy_tempBoard);
+											remove_markers(copy_copy_copy_tempBoard,removing_markers[i]);
+											vector<pair <int,int> > temp_rings = copy_copy_copy_tempBoard.get_rings(player_id);
+									        pair <int,int> temp_ring = temp_rings[j];
+									        remove_ring(copy_copy_copy_tempBoard,temp_ring);
+			                                v = min(v,Max_value(copy_copy_copy_tempBoard,alpha,beta,depth-1,3-player_id));
+			                    			if(v < alpha)
+			                    				return v;
+			                    			beta = min(beta,v);
+									    }
+									}
+
+								}
+							}
+						}
+
+					}
+					
+	        	}
+	        }
+	    }
+
+	    
+
+    }
+    else{
+        cout << "Invalid Move" << "\n";
+    }
+}
+
+
 
 // Sample C++ Code 
 int main(int argc, char** argv) {
