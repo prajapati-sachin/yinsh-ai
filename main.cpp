@@ -135,7 +135,7 @@ string move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> c
     if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
         tempBoard.set_at_position(coordinates_for_marker.first,coordinates_for_marker.second,player_id);
         tempBoard.set_at_position(coordinates_for_ring.first,coordinates_for_ring.second,player_id+2);
-        string s="";
+        
         s+="S ";
         pair<int,int> p = b.get_hexagon_point(coordinates_for_marker.first,coordinates_for_marker.second);
         s+=to_string(p.first);
@@ -217,6 +217,7 @@ string move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> c
     else{
         cout << "Invalid Move" << "\n";
     }
+    //cout<<s<<endl;
     return s;
 }
 
@@ -291,16 +292,17 @@ string alpha_beta_search(Board &tempBoard,int player_id){
 
 string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
-	string move;
-	cout<<111<<endl;
+	string move="";
+	
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
-		
+		//cout<<successors[i].first.first<<","<<successors[i].first.second <<endl;
+		//cout<<copy.get_at_position(5,5)<<endl;
 		pair<int,int> coordinates_for_marker = successors[i].first;
 		pair<int,int> coordinates_for_ring = successors[i].second;
 		move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,move,v,alpha,beta,depth);
-
+		//cout<<copy.get_at_position(5,5)<<endl;
 		if(v > beta)
 			return move;
 	}
@@ -356,7 +358,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         string a="";
         string s1=move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,tempBoard,a,false);
         //checking if ring would be removed or not if it is my move
-   		
+   		//s1="aa";
         vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
         //cout<<"size: "<<removing_markers.size()<<endl;
         int value=0;
@@ -455,8 +457,9 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
     if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
         string a="";
         string s1=move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,tempBoard,a,false);
+        s1="aa";
         //checking if ring would be removed or not if it is my move
-   
+   		//cout<<s1<<endl;
         vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
         //cout<<"size: "<<removing_markers.size()<<endl;
         int value=0;
@@ -614,6 +617,7 @@ int main(int argc, char** argv) {
     while(true){
         string s_out = alpha_beta_search(board,player_id);
         s_out.pop_back();//delete last space
+        make_move(board, s_out, player_id);
         cout<<s_out<<endl;
 
         getline(cin, move);
