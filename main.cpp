@@ -36,6 +36,7 @@ void inital_moves_initialize(){
     initial_moves.push("P 0 0");
 }
 
+string make_string(pair<pair<int,int>, pair<int,int> > removing_markers ,pair<int,int> remove_ring );
 
 vector<pair<pair<int,int>,pair<int,int> > > find_removing_markers(Board tempBoard,int player_id){
     vector< pair < pair <int,int>, pair <int,int> > > removing_markers;
@@ -141,7 +142,7 @@ string move_ring_in_board(pair<int, int> coordinates_for_marker,pair<int, int> c
         s+=" ";
         s+=to_string(p.second);
         s+=" ";
-        s+="M "
+        s+="M ";
         p=b.get_hexagon_point(coordinates_for_ring.first,coordinates_for_ring.second);
         s+=to_string(p.first);
         s+=" ";
@@ -267,7 +268,7 @@ void make_move(Board &tempBoard, string move, int player_id){
                 pair<int, int> final_ring_removal = b.get_2dpoint(hexagon_ring_removal, points_in_hexagon_ring_removal);
 
                 remove_markers(tempBoard,make_pair(coordinates_marker_removal_start,coordinates_marker_removal_end));
-                remove_ring(final_ring_removal);
+                remove_ring(tempBoard,final_ring_removal);
 
                 i+=9;
 
@@ -276,10 +277,17 @@ void make_move(Board &tempBoard, string move, int player_id){
     }
 }
 
+string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id);
+int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id);
+int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id);
+void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
+void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
+
 string alpha_beta_search(Board &tempBoard,int player_id){
 	int depth=1;
 	return Max_value_action(tempBoard,INT_MIN,INT_MAX,depth,player_id);
 }
+
 
 string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
@@ -290,7 +298,7 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int pl
 		
 		pair<int,int> coordinates_for_marker = successors[i].first;
 		pair<int,int> coordinates_for_ring = successors[i].second;
-		move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,&move,&v,&alpha,&beta,depth);
+		move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,move,v,alpha,beta,depth);
 
 		if(v > beta)
 			return move;
@@ -300,7 +308,7 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int pl
 
 int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	if(depth==0||tempBoard.isTerminal())
-		return tempBoard.evaluation_function();
+		return tempBoard.evaluation(player_id);
 	else{
 		int v = INT_MIN;
 		string str = "";
@@ -310,7 +318,7 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 			
 			pair<int,int> coordinates_for_marker = successors[i].first;
 			pair<int,int> coordinates_for_ring = successors[i].second;
-			move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,&str,&v,&alpha,&beta,depth);
+			move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,copy,str,v,alpha,beta,depth);
 			//v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
 			if(v > beta)
 				return v;
@@ -322,7 +330,7 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 
 int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
 	if(depth==0||tempBoard.isTerminal())
-		return tempBoard.evaluation_function();
+		return tempBoard.evaluation(player_id);
 	else{
 		int v = INT_MAX;
 		string str = "";
@@ -332,7 +340,7 @@ int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id){
 			
 			pair<int,int> coordinates_for_marker = successors[i].first;
 			pair<int,int> coordinates_for_ring = successors[i].second;
-			move_ring_in_board_min(coordinates_for_marker,coordinates_for_ring,player_id,copy,&str,&v,&alpha,&beta,depth);
+			move_ring_in_board_min(coordinates_for_marker,coordinates_for_ring,player_id,copy,str,v,alpha,beta,depth);
 			//v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
 			if(v < alpha)
 				return v;
@@ -351,7 +359,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
         //cout<<"size: "<<removing_markers.size()<<endl;
         int value=0;
-        if(find_removing_markers1.size()==0){
+        if(removing_markers1.size()==0){
         	value = Min_value(tempBoard,alpha,beta,depth-1,3-player_id);
         	if(v<value){
         		str=s1;
@@ -359,7 +367,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         	}
             // v = max(v,Min_value(tempBoard,alpha,beta,depth-1,3-player_id));
 			if(v > beta)
-				return v;
+				return ;
 			alpha = max(alpha,v);
         }
         else{
@@ -373,18 +381,18 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
 		            remove_ring(copy_tempBoard,temp_ring1);
 		            s2= make_string(removing_markers1[i],temp_ring1);
                     vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
-                    if(find_removing_markers2.size()==0){
+                    if(removing_markers2.size()==0){
 			            value = Min_value(copy_tempBoard,alpha,beta,depth-1,3-player_id);
 			            if(v<value){
 			            	str=s1+s2;
 			            	v=value;
 			            }
 						if(v > beta)
-							return v;
+							return ;
 						alpha = max(alpha,v);
 					}
 					else{
-					    for(int i=0;i<removing_markers.2size();i++){
+					    for(int i=0;i<removing_markers2.size();i++){
 			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
 			        			string s3="";
 				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
@@ -394,14 +402,14 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
 					            remove_ring(copy_copy_tempBoard,temp_ring2);
 					            s3= make_string(removing_markers2[i],temp_ring2);
 			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
-                                if(find_removing_markers3.size()==0){
+                                if(removing_markers3.size()==0){
 						            value=Min_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id);
 						            if(v<value){
 						            	str=s1+s2+s3;
 						            	v=value;
 						            }
 									if(v > beta)
-										return v;
+										return ;
 									alpha = max(alpha,v);
 								}else{
 									for(int i=0;i<1;i++){
@@ -419,7 +427,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
 						        				v=value;
 						        			}
 						        			if(v > beta)
-						        				return v;
+						        				return ;
 						        			alpha = max(alpha,v);
 									    }
 									}
@@ -453,14 +461,14 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
         vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
         //cout<<"size: "<<removing_markers.size()<<endl;
         int value=0;
-        if(find_removing_markers1.size()==0){
+        if(removing_markers1.size()==0){
         	value = Max_value(tempBoard,alpha,beta,depth-1,3-player_id);
         	if(v>value){
         		str=s1;
         		v=value;
         	}
 			if(v < alpha)
-				return v;
+				return ;
 			beta = min(beta,v);
         }
         else{
@@ -474,18 +482,18 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
 		            remove_ring(copy_tempBoard,temp_ring1);
 		            s2= make_string(removing_markers1[i],temp_ring1);
                     vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
-                    if(find_removing_markers2.size()==0){
+                    if(removing_markers2.size()==0){
                         value = Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id);
                         if(v>value){
                         	str=s1+s2;
                         	v=value;
                         }
             			if(v < alpha)
-            				return v;
+            				return ;
             			beta = min(beta,v);
 					}
 					else{
-					    for(int i=0;i<removing_markers.size();i++){
+					    for(int i=0;i<removing_markers2.size();i++){
 			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
 				        		string s3="";
 				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
@@ -495,14 +503,14 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
 					            remove_ring(copy_copy_tempBoard,temp_ring2);
 					            s3= make_string(removing_markers2[i],temp_ring2);
 			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
-                                if(find_removing_markers3.size()==0){
+                                if(removing_markers3.size()==0){
 			                        value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id);
 			                        if(v>value){
 			                        	str=s1+s2+s3;
 			                        	v=value;
 			                        }
 			            			if(v < alpha)
-			            				return v;
+			            				return ;
 			            			beta = min(beta,v);
 								}else{
 									for(int i=0;i<1;i++){
@@ -520,7 +528,7 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
 						        				v=value;
 						        			}
 			                    			if(v < alpha)
-			                    				return v;
+			                    				return ;
 			                    			beta = min(beta,v);
 									    }
 									}
@@ -544,7 +552,7 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
 }
 
 string make_string(pair<pair<int,int>, pair<int,int> > removing_markers ,pair<int,int> remove_ring ){
-	str s="";
+	string s="";
 	s+="RS ";
 	pair<int,int> p = b.get_hexagon_point(removing_markers.first.first,removing_markers.first.second);
     s+=to_string(p.first);
@@ -552,13 +560,13 @@ string make_string(pair<pair<int,int>, pair<int,int> > removing_markers ,pair<in
     s+=to_string(p.second);
     s+=" ";
     s+="RE ";
-	pair<int,int> p = b.get_hexagon_point(removing_markers.second.first,removing_markers.second.second);
+	p = b.get_hexagon_point(removing_markers.second.first,removing_markers.second.second);
     s+=to_string(p.first);
     s+=" ";
     s+=to_string(p.second);
     s+=" ";
 	s+="X ";
-	pair<int,int> p = b.get_hexagon_point(remove_ring.first,remove_ring.second);
+	p = b.get_hexagon_point(remove_ring.first,remove_ring.second);
     s+=to_string(p.first);
     s+=" ";
     s+=to_string(p.second);
@@ -573,92 +581,92 @@ int main(int argc, char** argv) {
     // cout << sizeof(b) << "\n";
     // cout << "num of hexagons"<< b.no_of_hexagons() << "\n";
     // cout << "num of points in hex 2" << b.points_in_hexagon_i(2) << "\n";
-    initialize_board();
-    inital_moves_initialize();
+    // initialize_board();
+    // inital_moves_initialize();
 
-    // cout << "alright" << "\n";
+    // // cout << "alright" << "\n";
     
-    int player_id, board_size, time_limit;
-    string move;
-    // // Get input from server about game specifications
-    // cin >> player_id >> board_size >> time_limit;
+    // int player_id, board_size, time_limit;
+    // string move;
+    // // // Get input from server about game specifications
+    // // cin >> player_id >> board_size >> time_limit;
 
-    player_id=1;
-    if(player_id == 2) {
-        // Get other player's move
-        getline(cin, move); 
-        make_move(move, 1);   
-        int ring_move=0;
-        while(true) {
-            //OUTPUT YOUR MOVE
-            if(ring_move<5){
-                string temp = initial_moves.top();
-                initial_moves.pop();
-                pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
-                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-                if(board[inboard.first][inboard.second]==0){
-                    // place the ring
-                    board[inboard.first][inboard.second]=4;
-                    //output
-                    cout << temp << "\n";
-                }
-                else{
-                    ring_move--;
-                }
-                //SIMPLY PLACE A RING                
-                ring_move++;
-            }
-            else{
-                //OUTPUT MAIN MOVE
-            }
-            ///////////////////////////////////////////////////////////////////////////////////////// 
-            //MAKE THAT MOVE IN YOUR BOARD
+    // player_id=1;
+    // if(player_id == 2) {
+    //     // Get other player's move
+    //     getline(cin, move); 
+    //     make_move(move, 1);   
+    //     int ring_move=0;
+    //     while(true) {
+    //         //OUTPUT YOUR MOVE
+    //         if(ring_move<5){
+    //             string temp = initial_moves.top();
+    //             initial_moves.pop();
+    //             pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+    //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+    //             if(board[inboard.first][inboard.second]==0){
+    //                 // place the ring
+    //                 board[inboard.first][inboard.second]=4;
+    //                 //output
+    //                 cout << temp << "\n";
+    //             }
+    //             else{
+    //                 ring_move--;
+    //             }
+    //             //SIMPLY PLACE A RING                
+    //             ring_move++;
+    //         }
+    //         else{
+    //             //OUTPUT MAIN MOVE
+    //         }
+    //         ///////////////////////////////////////////////////////////////////////////////////////// 
+    //         //MAKE THAT MOVE IN YOUR BOARD
             
-            /////////////////////////////////////////////////////////////////////////////////////////
-            //GET OTHER PLAYERS MOVE
-            getline(cin, move);
-            make_move(move, 1);
-        }
-    }   
-    else if(player_id == 1) {
-        int ring_move=0;
-                        // cout << "I am here\n"; 
+    //         /////////////////////////////////////////////////////////////////////////////////////////
+    //         //GET OTHER PLAYERS MOVE
+    //         getline(cin, move);
+    //         make_move(move, 1);
+    //     }
+    // }   
+    // else if(player_id == 1) {
+    //     int ring_move=0;
+    //                     // cout << "I am here\n"; 
 
-        while(true){
-            //OUTPUT YOUR MOVE
-            if(ring_move<5){
-                // cout << "I am here\n"; 
-                string temp = initial_moves.top();
-                initial_moves.pop();
-                pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
-                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-                if(board[inboard.first][inboard.second]==0){
-                    // place the ring
-                    board[inboard.first][inboard.second]=3;
-                    //output
-                    cout << temp << "\n";
-                }
-                else{
-                    // ring_move--;
-                    continue;
-                }
-                //SIMPLY PLACE A RING                
-                ring_move++;
-            }
-            else{
-                //OUTPUT MAIN MOVE
+    //     while(true){
+    //         //OUTPUT YOUR MOVE
+    //         if(ring_move<5){
+    //             // cout << "I am here\n"; 
+    //             string temp = initial_moves.top();
+    //             initial_moves.pop();
+    //             pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+    //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+    //             if(board[inboard.first][inboard.second]==0){
+    //                 // place the ring
+    //                 board[inboard.first][inboard.second]=3;
+    //                 //output
+    //                 cout << temp << "\n";
+    //             }
+    //             else{
+    //                 // ring_move--;
+    //                 continue;
+    //             }
+    //             //SIMPLY PLACE A RING                
+    //             ring_move++;
+    //         }
+    //         else{
+    //             //OUTPUT MAIN MOVE
                 
-            }
-            ///////////////////////////////////////////////////////////////////////////////////////// 
-            //MAKE THAT MOVE IN YOUR BOARD
+    //         }
+    //         ///////////////////////////////////////////////////////////////////////////////////////// 
+    //         //MAKE THAT MOVE IN YOUR BOARD
             
-            /////////////////////////////////////////////////////////////////////////////////////////
-            //GET OTHER PLAYERS MOVE
-            getline(cin, move);
-            make_move(move, 2); 
+    //         /////////////////////////////////////////////////////////////////////////////////////////
+    //         //GET OTHER PLAYERS MOVE
+    //         getline(cin, move);
+    //         make_move(move, 2); 
             
-        }
-    }
+    //     }
+    // }
 
     // make_move("P 0 0", 1);
     // make_move("S 0 0 M 1 1", 1);

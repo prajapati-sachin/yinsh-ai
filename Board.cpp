@@ -58,7 +58,7 @@ int Board::get_at_position(int i,int j){
 	return board[i][j];
 }
 
-int Board::isTerminal(){
+bool Board::isTerminal(){
 	return ((ring_count[0]<=2)||(ring_count[1]<=2));
 }
 

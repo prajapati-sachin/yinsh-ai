@@ -42,6 +42,8 @@ public:
 
     int evaluation(int player_id);
 
+    bool isTerminal();
+
     vector<pair<pair<int,int>,pair<int,int> > > neighbour( int player_id );
 
 };
