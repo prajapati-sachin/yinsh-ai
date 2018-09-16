@@ -120,7 +120,7 @@ void remove_ring(Board &tempBoard , pair <int,int>  removing_ring){
 	tempBoard.set_at_position(removing_ring.first,removing_ring.second,0);
 }
 
-void place_ring_in_board(pair<int,int> coordinates_in_board,int player_id, Board &tempBoard, string str){
+void place_ring_in_board(Board &tempBoard, pair<int,int> coordinates_in_board,int player_id){
     if(tempBoard.get_at_position(coordinates_in_board.first,coordinates_in_board.second)==0){
         tempBoard.set_at_position(coordinates_in_board.first,coordinates_in_board.second,player_id+2) ;
         
@@ -234,7 +234,7 @@ void make_move(Board &tempBoard, string move, int player_id){
         int points_in_hexagon= stoi(tokens[2]);
         pair<int, int> coordinates_in_board = b.get_2dpoint(hexagon, points_in_hexagon);
         string s="aa";//useless
-        place_ring_in_board(coordinates_in_board,player_id,tempBoard,s);
+        place_ring_in_board(tempBoard,coordinates_in_board,player_id);
 
     }  
     else{
@@ -292,6 +292,7 @@ string alpha_beta_search(Board &tempBoard,int player_id){
 string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
 	string move;
+	cout<<111<<endl;
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
@@ -450,8 +451,6 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
     }
 }
 
-
-
 void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth){
     if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
         string a="";
@@ -582,31 +581,70 @@ int main(int argc, char** argv) {
     // cout << "num of hexagons"<< b.no_of_hexagons() << "\n";
     // cout << "num of points in hex 2" << b.points_in_hexagon_i(2) << "\n";
     // initialize_board();
-    // inital_moves_initialize();
+    inital_moves_initialize();
 
     // // cout << "alright" << "\n";
     
-    // int player_id, board_size, time_limit;
-    // string move;
-    // // // Get input from server about game specifications
-    // // cin >> player_id >> board_size >> time_limit;
+    int player_id, board_size, time_limit;
+    string move;
+    // // Get input from server about game specifications
+    // cin >> player_id >> board_size >> time_limit;
+    Board board = Board();
+    player_id=1;
 
-    // player_id=1;
+
+    for(int i=0;i<10;i++){
+
+    	string temp = initial_moves.top();
+        initial_moves.pop();
+        vector<string> tokens;
+	    stringstream stream1(temp);
+	    string tempo;
+	    while(stream1 >> tempo){
+	        tokens.push_back(tempo);
+	    }
+
+        pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
+        pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+        place_ring_in_board(board,inboard,player_id);
+        player_id=3-player_id;
+    }
+
+
+    while(true){
+        string s_out = alpha_beta_search(board,player_id);
+        s_out.pop_back();//delete last space
+        cout<<s_out<<endl;
+
+        getline(cin, move);
+        make_move(board, move, 3-player_id);
+    }
+
+
     // if(player_id == 2) {
     //     // Get other player's move
-    //     getline(cin, move); 
-    //     make_move(move, 1);   
+    //     getline(cin, move);
+    //     make_move(board, move, 1);   
     //     int ring_move=0;
     //     while(true) {
     //         //OUTPUT YOUR MOVE
     //         if(ring_move<5){
+    //            // cout << "I am here\n"; 
     //             string temp = initial_moves.top();
     //             initial_moves.pop();
-    //             pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+
+    //             vector<string> tokens;
+			 //    stringstream stream1(temp);
+			 //    string tempo;
+			 //    while(stream1 >> tempo){
+			 //        tokens.push_back(tempo);
+			 //    }
+
+    //             pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
     //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-    //             if(board[inboard.first][inboard.second]==0){
+    //             if(board.get_at_position(inboard.first, inboard.second)==0){
     //                 // place the ring
-    //                 board[inboard.first][inboard.second]=4;
+    //                 board.set_at_position(inboard.first, inboard.second, 4);
     //                 //output
     //                 cout << temp << "\n";
     //             }
@@ -625,12 +663,12 @@ int main(int argc, char** argv) {
     //         /////////////////////////////////////////////////////////////////////////////////////////
     //         //GET OTHER PLAYERS MOVE
     //         getline(cin, move);
-    //         make_move(move, 1);
+    //         make_move(board, move, 1);
     //     }
     // }   
     // else if(player_id == 1) {
     //     int ring_move=0;
-    //                     // cout << "I am here\n"; 
+    //     // cout << "I am here\n"; 
 
     //     while(true){
     //         //OUTPUT YOUR MOVE
@@ -638,11 +676,19 @@ int main(int argc, char** argv) {
     //             // cout << "I am here\n"; 
     //             string temp = initial_moves.top();
     //             initial_moves.pop();
-    //             pair<int, int> inposition = make_pair(temp.at(2)-'0', temp.at(4)-'0');
+
+    //             vector<string> tokens;
+			 //    stringstream stream1(temp);
+			 //    string tempo;
+			 //    while(stream1 >> tempo){
+			 //        tokens.push_back(tempo);
+			 //    }
+
+    //             pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
     //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-    //             if(board[inboard.first][inboard.second]==0){
+    //             if(board.get_at_position(inboard.first, inboard.second)==0){
     //                 // place the ring
-    //                 board[inboard.first][inboard.second]=3;
+    //                 board.set_at_position(inboard.first, inboard.second, 3);
     //                 //output
     //                 cout << temp << "\n";
     //             }
@@ -654,7 +700,11 @@ int main(int argc, char** argv) {
     //             ring_move++;
     //         }
     //         else{
+                
     //             //OUTPUT MAIN MOVE
+    //             string s_out = alpha_beta_search(board,player_id);
+    //             s_out.pop_back();//delete last space
+    //             cout<<s_out<<endl;
                 
     //         }
     //         ///////////////////////////////////////////////////////////////////////////////////////// 
@@ -663,10 +713,11 @@ int main(int argc, char** argv) {
     //         /////////////////////////////////////////////////////////////////////////////////////////
     //         //GET OTHER PLAYERS MOVE
     //         getline(cin, move);
-    //         make_move(move, 2); 
+    //         make_move(board, move, 3-player_id); 
             
     //     }
     // }
+
 
     // make_move("P 0 0", 1);
     // make_move("S 0 0 M 1 1", 1);
