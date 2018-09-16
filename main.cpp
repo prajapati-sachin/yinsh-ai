@@ -591,136 +591,153 @@ int main(int argc, char** argv) {
     int player_id, board_size, time_limit;
     string move;
     // // Get input from server about game specifications
-    // cin >> player_id >> board_size >> time_limit;
+    cin >> player_id >> board_size >> time_limit;
     Board board = Board();
-    player_id=1;
+    //player_id=1;
 
 
-    for(int i=0;i<10;i++){
+    // for(int i=0;i<10;i++){
 
-    	string temp = initial_moves.top();
-        initial_moves.pop();
-        vector<string> tokens;
-	    stringstream stream1(temp);
-	    string tempo;
-	    while(stream1 >> tempo){
-	        tokens.push_back(tempo);
-	    }
+    // 	string temp = initial_moves.top();
+    //     initial_moves.pop();
+    //     vector<string> tokens;
+	   //  stringstream stream1(temp);
+	   //  string tempo;
+	   //  while(stream1 >> tempo){
+	   //      tokens.push_back(tempo);
+	   //  }
 
-        pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
-        pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-        place_ring_in_board(board,inboard,player_id);
-        player_id=3-player_id;
-    }
-
-
-    while(true){
-        string s_out = alpha_beta_search(board,player_id);
-        s_out.pop_back();//delete last space
-        make_move(board, s_out, player_id);
-        cout<<s_out<<endl;
-
-        getline(cin, move);
-        make_move(board, move, 3-player_id);
-    }
-
-
-    // if(player_id == 2) {
-    //     // Get other player's move
-    //     getline(cin, move);
-    //     make_move(board, move, 1);   
-    //     int ring_move=0;
-    //     while(true) {
-    //         //OUTPUT YOUR MOVE
-    //         if(ring_move<5){
-    //            // cout << "I am here\n"; 
-    //             string temp = initial_moves.top();
-    //             initial_moves.pop();
-
-    //             vector<string> tokens;
-			 //    stringstream stream1(temp);
-			 //    string tempo;
-			 //    while(stream1 >> tempo){
-			 //        tokens.push_back(tempo);
-			 //    }
-
-    //             pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
-    //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-    //             if(board.get_at_position(inboard.first, inboard.second)==0){
-    //                 // place the ring
-    //                 board.set_at_position(inboard.first, inboard.second, 4);
-    //                 //output
-    //                 cout << temp << "\n";
-    //             }
-    //             else{
-    //                 ring_move--;
-    //             }
-    //             //SIMPLY PLACE A RING                
-    //             ring_move++;
-    //         }
-    //         else{
-    //             //OUTPUT MAIN MOVE
-    //         }
-    //         ///////////////////////////////////////////////////////////////////////////////////////// 
-    //         //MAKE THAT MOVE IN YOUR BOARD
-            
-    //         /////////////////////////////////////////////////////////////////////////////////////////
-    //         //GET OTHER PLAYERS MOVE
-    //         getline(cin, move);
-    //         make_move(board, move, 1);
-    //     }
-    // }   
-    // else if(player_id == 1) {
-    //     int ring_move=0;
-    //     // cout << "I am here\n"; 
-
-    //     while(true){
-    //         //OUTPUT YOUR MOVE
-    //         if(ring_move<5){
-    //             // cout << "I am here\n"; 
-    //             string temp = initial_moves.top();
-    //             initial_moves.pop();
-
-    //             vector<string> tokens;
-			 //    stringstream stream1(temp);
-			 //    string tempo;
-			 //    while(stream1 >> tempo){
-			 //        tokens.push_back(tempo);
-			 //    }
-
-    //             pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
-    //             pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
-    //             if(board.get_at_position(inboard.first, inboard.second)==0){
-    //                 // place the ring
-    //                 board.set_at_position(inboard.first, inboard.second, 3);
-    //                 //output
-    //                 cout << temp << "\n";
-    //             }
-    //             else{
-    //                 // ring_move--;
-    //                 continue;
-    //             }
-    //             //SIMPLY PLACE A RING                
-    //             ring_move++;
-    //         }
-    //         else{
-                
-    //             //OUTPUT MAIN MOVE
-    //             string s_out = alpha_beta_search(board,player_id);
-    //             s_out.pop_back();//delete last space
-    //             cout<<s_out<<endl;
-                
-    //         }
-    //         ///////////////////////////////////////////////////////////////////////////////////////// 
-    //         //MAKE THAT MOVE IN YOUR BOARD
-            
-    //         /////////////////////////////////////////////////////////////////////////////////////////
-    //         //GET OTHER PLAYERS MOVE
-    //         getline(cin, move);
-    //         make_move(board, move, 3-player_id); 
-            
-    //     }
+    //     pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
+    //     pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+    //     place_ring_in_board(board,inboard,player_id);
+    //     player_id=3-player_id;
     // }
+
+
+    // while(true){
+    //     string s_out = alpha_beta_search(board,player_id);
+    //     s_out.pop_back();//delete last space
+    //     make_move(board, s_out, player_id);
+    //     cout<<s_out<<endl;
+    //     if(board.isTerminal());
+    //     	break;
+    //     getline(cin, move);
+    //     make_move(board, move, 3-player_id);
+    //     if(board.isTerminal());
+    // 		break;
+    // }
+
+
+    if(player_id == 2) {
+        // Get other player's move
+        getline(cin, move);
+        make_move(board, move, 1);   
+        int ring_move=0;
+        while(true) {
+            //OUTPUT YOUR MOVE
+            string s_out="";
+            if(ring_move<5){
+               // cout << "I am here\n"; 
+                string temp = initial_moves.top();
+                initial_moves.pop();
+
+                vector<string> tokens;
+			    stringstream stream1(temp);
+			    string tempo;
+			    while(stream1 >> tempo){
+			        tokens.push_back(tempo);
+			    }
+
+                pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
+                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+                if(board.get_at_position(inboard.first, inboard.second)==0){
+                    // place the ring
+                    board.set_at_position(inboard.first, inboard.second, 4);
+                    //output
+                    cout << temp << "\n";
+                }
+                else{
+                    //ring_move--;
+                    continue;
+                }
+                //SIMPLY PLACE A RING                
+                ring_move++;
+            }
+            else{
+                //OUTPUT MAIN MOVE
+                s_out = alpha_beta_search(board,player_id);
+                s_out.pop_back();//delete last space
+                cout<<s_out<<endl;
+            }
+            ///////////////////////////////////////////////////////////////////////////////////////// 
+            //MAKE THAT MOVE IN YOUR BOARD
+            make_move(board, s_out, player_id);
+            if(board.isTerminal());
+            	break;
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //GET OTHER PLAYERS MOVE
+            getline(cin, move);
+            make_move(board, move, 1);
+            if(board.isTerminal());
+            	break;
+        }
+    }   
+    else if(player_id == 1) {
+        int ring_move=0;
+        // cout << "I am here\n"; 
+
+        while(true){
+            //OUTPUT YOUR MOVE
+            string s_out="";
+            if(ring_move<5){
+                // cout << "I am here\n"; 
+                string temp = initial_moves.top();
+                initial_moves.pop();
+
+                vector<string> tokens;
+			    stringstream stream1(temp);
+			    string tempo;
+			    while(stream1 >> tempo){
+			        tokens.push_back(tempo);
+			    }
+
+                pair<int, int> inposition = make_pair(stoi(tokens[1]), stoi(tokens[2]));
+                pair<int, int> inboard = b.get_2dpoint(inposition.first, inposition.second);
+                if(board.get_at_position(inboard.first, inboard.second)==0){
+                    // place the ring
+                    board.set_at_position(inboard.first, inboard.second, 3);
+                    //output
+                    cout << temp << endl;
+                }
+                else{
+                    // ring_move--;
+                    continue;
+                }
+                //SIMPLY PLACE A RING                
+                ring_move++;
+            }
+            else{
+                
+                //OUTPUT MAIN MOVE
+                s_out = alpha_beta_search(board,player_id);
+                s_out.pop_back();//delete last space
+                cout<<s_out<<endl;
+                
+            }
+            ///////////////////////////////////////////////////////////////////////////////////////// 
+            //MAKE THAT MOVE IN YOUR BOARD
+            make_move(board, s_out, player_id);
+            if(board.isTerminal());
+            	break;
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //GET OTHER PLAYERS MOVE
+            getline(cin, move);
+            make_move(board, move, 3-player_id); 
+            if(board.isTerminal());
+            	break;
+            
+        }
+    }
 
 
     // make_move("P 0 0", 1);
