@@ -274,7 +274,6 @@ pair<pair<int,int>,pair<int,int> > Max_value_action(Board tempBoard, int alpha, 
 		pair<int,int> coordinates_for_marker = successors[i].first;
 		pair<int,int> coordinates_for_ring = successors[i].second;
 		move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,copy,str);
-		v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
 		if(Min_value(copy,alpha,beta,depth-1,3-player_id)>v){
 			v=Min_value(copy,alpha,beta,depth-1,3-player_id);
 			move=make_pair(coordinates_for_marker,coordinates_for_ring);

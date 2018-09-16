@@ -58,6 +58,10 @@ int Board::get_at_position(int i,int j){
 	return board[i][j];
 }
 
+int Board::isTerminal(){
+	return ((ring_count[0]<=2)||(ring_count[1]<=2));
+}
+
 void Board::set_at_position(int i,int j,int value){
 	int d=0;
 	int prev_value = board[i][j];
