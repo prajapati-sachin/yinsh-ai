@@ -11,6 +11,7 @@ vector<pair<int, int> > rings1;
 vector<pair<int, int> > rings2;
 vector<pair<int, int> > rings[2];
 stack<string> initial_moves;
+long long node;
 /*
 Not in board: -1
 Empty Position: 0
@@ -286,7 +287,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
 void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
 
 string alpha_beta_search(Board &tempBoard,int player_id){
-	int depth=2;
+	int depth=3;
 	return Max_value_action(tempBoard,INT_MIN,INT_MAX,depth,player_id);
 }
 
@@ -294,7 +295,6 @@ string alpha_beta_search(Board &tempBoard,int player_id){
 string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
 	string move="";
-	
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
@@ -311,8 +311,11 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int pl
 }
 
 int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval){
-	if(depth==0||tempBoard.isTerminal())
+    node++;
+	if(depth==0||tempBoard.isTerminal()){
+        
 		return tempBoard.evaluation(player_id_for_eval);
+    }
 	else{
 		int v = INT_MIN;
 		string str = "";
@@ -324,8 +327,8 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,in
 			pair<int,int> coordinates_for_ring = successors[i].second;
 			move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,player_id_for_eval,copy,str,v,alpha,beta,depth);
 			//v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
-			if(v > beta)
-				return v;
+			// if(v > beta)
+			// 	return v;
 			// alpha = max(alpha,v);
 		}
 		return v;
@@ -333,8 +336,11 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,in
 }
 
 int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval){
-	if(depth==0||tempBoard.isTerminal())
+    node++;
+	if(depth==0||tempBoard.isTerminal()){
+        
 		return tempBoard.evaluation(player_id_for_eval);
+    }
 	else{
 		int v = INT_MAX;
 		string str = "";
@@ -346,8 +352,8 @@ int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int
 			pair<int,int> coordinates_for_ring = successors[i].second;
 			move_ring_in_board_min(coordinates_for_marker,coordinates_for_ring,player_id,player_id_for_eval,copy,str,v,alpha,beta,depth);
 			//v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
-			if(v < alpha)
-				return v;
+			// if(v < alpha)
+			// 	return v;
 			//beta = min(beta,v);
 		}
 		return v;
@@ -356,14 +362,14 @@ int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int
 
 void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth){
     if(tempBoard.get_at_position(coordinates_for_marker.first,coordinates_for_marker.second)==player_id+2 && tempBoard.get_at_position(coordinates_for_ring.first,coordinates_for_ring.second)==0){
-        std::ofstream ofs ("test.txt", std::ofstream::out);
-
+        // std::ofstream ofs ("test.txt", std::ofstream::out);
+        // ofs<<"size: "<<removing_markers1.size()<<endl;
         string a="";
         string s1=move_ring_in_board(coordinates_for_marker,coordinates_for_ring,player_id,tempBoard,a,false);
         //checking if ring would be removed or not if it is my move
    		//s1="aa";
         vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
-        ofs<<"size: "<<removing_markers1.size()<<endl;
+        
         //ofs << "lorem ipsum";
         int value=0;
         if(removing_markers1.size()==0){
@@ -679,6 +685,9 @@ int main(int argc, char** argv) {
                 //OUTPUT MAIN MOVE
                 s_out = alpha_beta_search(board,player_id);
                 s_out.pop_back();//delete last space
+                //std::ofstream ofs ("test.txt", std::ofstream::out);
+                ofs<<"node: "<<node<<endl;
+                node=0;
                 cout<<s_out<<endl;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 		        //MAKE THAT MOVE IN YOUR BOARD
