@@ -103,12 +103,17 @@ void Board::set_at_position(int i,int j,int value){
 			marker_count[0]++;
 			int find = find_in_vector(rings[0], make_pair(i,j));
 			if(find!=-1){
-            	rings[0].erase(rings[0].begin() + find);
+            	rings[0].erase(rings[0].begin()+find);
             	ring_count[0]--;
         	}
 		}
-		else if(value==0)
-			ring_count[0]--;
+		else if(value==0){
+			int find = find_in_vector(rings[0], make_pair(i,j));
+			if(find!=-1){
+            	rings[0].erase(rings[0].begin()+find);
+            	ring_count[0]--;
+   			}
+   		}
 		else
 			cout<<"wrong"<<endl;
 	}else if(prev_value==4){
@@ -116,12 +121,17 @@ void Board::set_at_position(int i,int j,int value){
 			marker_count[1]++;
 			int find = find_in_vector(rings[1], make_pair(i,j));
 			if(find!=-1){
-            	rings[1].erase(rings[1].begin() + find);
+            	rings[1].erase(rings[1].begin()+find);
             	ring_count[1]--;
         	}
 		}
-		else if(value==0)
-			ring_count[1]--;
+		else if(value==0){
+			int find = find_in_vector(rings[1], make_pair(i,j));
+			if(find!=-1){
+            	rings[1].erase(rings[1].begin()+find);
+            	ring_count[1]--;
+        	}
+        }
 		else
 			cout<<"wrong"<<endl;
 	}else{
@@ -172,27 +182,12 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
 
 
 int Board::evaluation( int player_id){
-    int eval=300;
-    for(int i=0;i<11;i++){
-        for(int j=0;j<11;j++){
-            if(player_id==1){
-                if(board[i][j]==3){
-                    eval-=100;
-                }
-                else if(board[i][j]==1){
-                    eval+=1;
-                }
-            }
-            else if(player_id==2){
-                if(board[i][j]==4){
-                    eval-=100;
-                }
-                else if(board[i][j]==2){
-                    eval+=1;
-                }
-            }
-        }
-    }
+    int eval=0;
+    eval+= 100*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
+    eval+= (marker_count[player_id-1]-marker_count[3-player_id - 1]);
+    // srand(time(0)); 
+    
+    // eval = rand()%100;
     return eval;
 }
 
