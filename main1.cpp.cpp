@@ -12,8 +12,6 @@ vector<pair<int, int> > rings2;
 vector<pair<int, int> > rings[2];
 stack<string> initial_moves;
 long long node;
-std::ofstream ofs ("test2.txt", std::ofstream::out);
-
 /*
 Not in board: -1
 Empty Position: 0
@@ -282,7 +280,7 @@ void make_move(Board &tempBoard, string move, int player_id){
     }
 }
 
-bool initial_removal(Board &tempBoard,int player_id,string &str){
+bool initial_removal(Board &tempBoard,player_id,string &str){
     vector< pair < pair <int,int>, pair <int,int> > > removing_markers1 = find_removing_markers(tempBoard,player_id);//markers to be removed
     if(removing_markers1.size()==0)
         return false;
@@ -292,7 +290,7 @@ bool initial_removal(Board &tempBoard,int player_id,string &str){
         pair <int,int> temp_ring1 = temp_rings1[0];
         remove_ring(tempBoard,temp_ring1);
         string s1= make_string(removing_markers1[0],temp_ring1);
-        if(tempBoard.get_ring_count(player_id)==2){
+        if(tempBoard.get_ring_count(playerid)==2){
             //Board copy_tempBoard = Board(tempBoard);
             str = s1;
             return true;
@@ -309,7 +307,7 @@ bool initial_removal(Board &tempBoard,int player_id,string &str){
                 pair <int,int> temp_ring2 = temp_rings2[0];
                 remove_ring(tempBoard,temp_ring2);
                 string s2= make_string(removing_markers2[0],temp_ring2);
-                if(tempBoard.get_ring_count(player_id)==2){
+                if(tempBoard.get_ring_count(playerid)==2){
                     //Board copy_tempBoard = Board(tempBoard);
                     str = s1+s2;
                     return true;
@@ -338,30 +336,22 @@ bool initial_removal(Board &tempBoard,int player_id,string &str){
     }
 }
 
-string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id);
+string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id);
 int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval);
 int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval);
 void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
 void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
 
 string alpha_beta_search(Board &tempBoard,int player_id){
-	
-	return Max_value_action(tempBoard,INT_MIN,INT_MAX,player_id);
+	int depth=3;
+	return Max_value_action(tempBoard,INT_MIN,INT_MAX,depth,player_id);
 }
 
 
-string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id){
+string Max_value_action(Board &tempBoard, int alpha, int beta, int depth, int player_id){
 	int v = INT_MIN;
 	string move="";
-    int depth = 0;
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
-    int size = successors.size();
-    ofs<<"size: "<<size<<endl;
-    if(size<30)
-        depth = 4;
-    else
-        depth = 3;
-    //ofs<<"size: "<<successors.size()<<endl;
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
 		//cout<<successors[i].first.first<<","<<successors[i].first.second <<endl;
@@ -370,7 +360,7 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id){
 		pair<int,int> coordinates_for_ring = successors[i].second;
 		move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,player_id,copy,move,v,alpha,beta,depth);
 		//cout<<copy.get_at_position(5,5)<<endl;
-		if(v >= beta)
+		if(v > beta)
 			return move;
 	}
 	return move;
@@ -393,7 +383,7 @@ int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,in
 			pair<int,int> coordinates_for_ring = successors[i].second;
 			move_ring_in_board_max(coordinates_for_marker,coordinates_for_ring,player_id,player_id_for_eval,copy,str,v,alpha,beta,depth);
 			//v = max(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
-			if(v >= beta)
+			if(v > beta)
 				return v;
 			// alpha = max(alpha,v);
 		}
@@ -418,7 +408,7 @@ int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int
 			pair<int,int> coordinates_for_ring = successors[i].second;
 			move_ring_in_board_min(coordinates_for_marker,coordinates_for_ring,player_id,player_id_for_eval,copy,str,v,alpha,beta,depth);
 			//v = min(v,Min_value(copy,alpha,beta,depth-1,3-player_id));
-			if(v <= alpha)
+			if(v < alpha)
 				return v;
 			//beta = min(beta,v);
 		}
@@ -445,13 +435,12 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         		v=value;
         	}
             // v = max(v,Min_value(tempBoard,alpha,beta,depth-1,3-player_id));
-			if(v >= beta)
+			if(v > beta)
 				return ;
 			alpha = max(alpha,v);
         }
         else{
-            if(tempBoard.get_ring_count(player_id)==3){
-                string s2="";
+            if(tempBoard.get_ring_count(playerid)==3){
                 Board copy_tempBoard = Board(tempBoard);
                 remove_markers(copy_tempBoard,removing_markers1[0]);
                 vector<pair <int,int> > temp_rings1 = copy_tempBoard.get_rings(player_id);
@@ -463,7 +452,7 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
                     str=s1+s2;
                     v=value;
                 }
-                if(v >= beta)
+                if(v > beta)
                     return ;
                 alpha = max(alpha,v);
 
@@ -485,13 +474,12 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
     			            	str=s1+s2;
     			            	v=value;
     			            }
-    						if(v >= beta)
+    						if(v > beta)
     							return ;
     						alpha = max(alpha,v);
     					}
     					else{
-                            if(copy_tempBoard.get_ring_count(player_id)==3){
-                                string s3="";
+                            if(copy_tempBoard.get_ring_count(playerid)==3){
                                 Board copy_copy_tempBoard = Board(copy_tempBoard);
                                 remove_markers(copy_copy_tempBoard,removing_markers2[0]);
                                 vector<pair <int,int> > temp_rings2 = copy_copy_tempBoard.get_rings(player_id);
@@ -503,13 +491,13 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
                                     str=s1+s2+s3;
                                     v=value;
                                 }
-                                if(v >= beta)
+                                if(v > beta)
                                     return ;
                                 alpha = max(alpha,v);
 
                             }
-                            else{
-        					    for(int i=0;i<removing_markers2.size();i++){
+    					    else{
+                                for(int i=0;i<removing_markers2.size();i++){
         			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
         			        			string s3="";
         				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
@@ -525,27 +513,30 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         						            	str=s1+s2+s3;
         						            	v=value;
         						            }
-        									if(v >= beta)
+        									if(v > beta)
         										return ;
         									alpha = max(alpha,v);
         								}else{
-        									
-											string s4="";
-											Board copy_copy_copy_tempBoard = Board(copy_copy_tempBoard);
-											remove_markers(copy_copy_copy_tempBoard,removing_markers3[0]);
-											vector<pair <int,int> > temp_rings3 = copy_copy_copy_tempBoard.get_rings(player_id);
-									        pair <int,int> temp_ring3 = temp_rings3[0];
-									        remove_ring(copy_copy_copy_tempBoard,temp_ring3);
-									        s4=make_string(removing_markers3[0],temp_ring3);
-						                    value = Min_value(copy_copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
-						        			if(v<value){
-						        				str=s1+s2+s3+s4;
-						        				v=value;
-						        			}
-						        			if(v >= beta)
-						        				return ;
-						        			alpha = max(alpha,v);
-        									
+        									for(int i=0;i<1;i++){
+        										for(int j=0;j<1;j++){
+        											string s4="";
+        											Board copy_copy_copy_tempBoard = Board(copy_copy_tempBoard);
+        											remove_markers(copy_copy_copy_tempBoard,removing_markers3[i]);
+        											vector<pair <int,int> > temp_rings3 = copy_copy_copy_tempBoard.get_rings(player_id);
+        									        pair <int,int> temp_ring3 = temp_rings3[j];
+        									        remove_ring(copy_copy_copy_tempBoard,temp_ring3);
+        									        s4=make_string(removing_markers3[i],temp_ring3);
+        						                    value = Min_value(copy_copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
+        						        			if(v<value){
+        						        				str=s1+s2+s3+s4;
+        						        				v=value;
+        						        			}
+        						        			if(v > beta)
+        						        				return ;
+        						        			alpha = max(alpha,v);
+        									    }
+        									}
+
         								}
         							}
         						}
@@ -582,116 +573,80 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
         		str=s1;
         		v=value;
         	}
-			if(v <= alpha)
+			if(v < alpha)
 				return ;
 			beta = min(beta,v);
         }
         else{
-            if(tempBoard.get_ring_count(player_id)==3){
-                string s2="";
-                Board copy_tempBoard = Board(tempBoard);
-                remove_markers(copy_tempBoard,removing_markers1[0]);
-                vector<pair <int,int> > temp_rings1 = copy_tempBoard.get_rings(player_id);
-                pair <int,int> temp_ring1 = temp_rings1[0];
-                remove_ring(copy_tempBoard,temp_ring1);
-                s2= make_string(removing_markers1[0],temp_ring1);
-                value = Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
-                if(v>value){
-                    str=s1+s2;
-                    v=value;
-                }
-                if(v <= alpha)
-                    return ;
-                beta = min(beta,v); 
-
-            }
-            else{
-    	        for(int i=0;i<removing_markers1.size();i++){
-    	        	for(int j=0;j<tempBoard.get_ring_count(player_id);j++){
-    	        		string s2="";
-    	        		Board copy_tempBoard = Board(tempBoard);
-    	        		remove_markers(copy_tempBoard,removing_markers1[i]);
-    	        		vector<pair <int,int> > temp_rings1 = copy_tempBoard.get_rings(player_id);
-    		            pair <int,int> temp_ring1 = temp_rings1[j];
-    		            remove_ring(copy_tempBoard,temp_ring1);
-    		            s2= make_string(removing_markers1[i],temp_ring1);
-                        vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
-                        if(removing_markers2.size()==0){
-                            value = Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
-                            if(v>value){
-                            	str=s1+s2;
-                            	v=value;
-                            }
-                			if(v <= alpha)
-                				return ;
-                			beta = min(beta,v);
-    					}
-    					else{
-                            if(copy_tempBoard.get_ring_count(player_id)==3){
-                                string s3="";
-                                Board copy_copy_tempBoard = Board(copy_tempBoard);
-                                remove_markers(copy_copy_tempBoard,removing_markers2[0]);
-                                vector<pair <int,int> > temp_rings2 = copy_copy_tempBoard.get_rings(player_id);
-                                pair <int,int> temp_ring2 = temp_rings2[0];
-                                remove_ring(copy_copy_tempBoard,temp_ring2);
-                                s3= make_string(removing_markers2[0],temp_ring2);
-                                value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
-                                if(v>value){
-                                    str=s1+s2+s3;
-                                    v=value;
-                                }
-                                if(v <= alpha)
-                                    return ;
-                                beta = min(beta,v);
-
-                            }
-                            else{
-        					    for(int i=0;i<removing_markers2.size();i++){
-        			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
-        				        		string s3="";
-        				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
-        				        		remove_markers(copy_copy_tempBoard,removing_markers2[i]);
-        				        		vector<pair <int,int> > temp_rings2 = copy_copy_tempBoard.get_rings(player_id);
-        					            pair <int,int> temp_ring2 = temp_rings2[j];
-        					            remove_ring(copy_copy_tempBoard,temp_ring2);
-        					            s3= make_string(removing_markers2[i],temp_ring2);
-        			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
-                                        if(removing_markers3.size()==0){
-        			                        value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
-        			                        if(v>value){
-        			                        	str=s1+s2+s3;
-        			                        	v=value;
-        			                        }
-        			            			if(v <= alpha)
-        			            				return ;
-        			            			beta = min(beta,v);
-        								}else{
-
+	        for(int i=0;i<removing_markers1.size();i++){
+	        	for(int j=0;j<tempBoard.get_ring_count(player_id);j++){
+	        		string s2="";
+	        		Board copy_tempBoard = Board(tempBoard);
+	        		remove_markers(copy_tempBoard,removing_markers1[i]);
+	        		vector<pair <int,int> > temp_rings1 = copy_tempBoard.get_rings(player_id);
+		            pair <int,int> temp_ring1 = temp_rings1[j];
+		            remove_ring(copy_tempBoard,temp_ring1);
+		            s2= make_string(removing_markers1[i],temp_ring1);
+                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
+                    if(removing_markers2.size()==0){
+                        value = Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
+                        if(v>value){
+                        	str=s1+s2;
+                        	v=value;
+                        }
+            			if(v < alpha)
+            				return ;
+            			beta = min(beta,v);
+					}
+					else{
+					    for(int i=0;i<removing_markers2.size();i++){
+			        		for(int j=0;j<copy_tempBoard.get_ring_count(player_id);j++){
+				        		string s3="";
+				        		Board copy_copy_tempBoard = Board(copy_tempBoard);
+				        		remove_markers(copy_copy_tempBoard,removing_markers2[i]);
+				        		vector<pair <int,int> > temp_rings2 = copy_copy_tempBoard.get_rings(player_id);
+					            pair <int,int> temp_ring2 = temp_rings2[j];
+					            remove_ring(copy_copy_tempBoard,temp_ring2);
+					            s3= make_string(removing_markers2[i],temp_ring2);
+			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
+                                if(removing_markers3.size()==0){
+			                        value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
+			                        if(v>value){
+			                        	str=s1+s2+s3;
+			                        	v=value;
+			                        }
+			            			if(v < alpha)
+			            				return ;
+			            			beta = min(beta,v);
+								}else{
+									for(int i=0;i<1;i++){
+										for(int j=0;j<1;j++){
 											string s4="";
 											Board copy_copy_copy_tempBoard = Board(copy_copy_tempBoard);
-											remove_markers(copy_copy_copy_tempBoard,removing_markers3[0]);
+											remove_markers(copy_copy_copy_tempBoard,removing_markers3[i]);
 											vector<pair <int,int> > temp_rings3 = copy_copy_copy_tempBoard.get_rings(player_id);
-									        pair <int,int> temp_ring3 = temp_rings3[0];
+									        pair <int,int> temp_ring3 = temp_rings3[j];
 									        remove_ring(copy_copy_copy_tempBoard,temp_ring3);
-									        s4=make_string(removing_markers3[0],temp_ring3);
+									        s4=make_string(removing_markers3[i],temp_ring3);
 						                    value = Max_value(copy_copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
 						        			if(v>value){
 						        				str=s1+s2+s3+s4;
 						        				v=value;
 						        			}
-			                    			if(v <= alpha)
+			                    			if(v < alpha)
 			                    				return ;
 			                    			beta = min(beta,v);
-        								}
-        							}
-        						}
-                            }
+									    }
+									}
 
-    					}
-    					
-    	        	}
-    	        }
-            }
+								}
+							}
+						}
+
+					}
+					
+	        	}
+	        }
 	    }
 
 	    
@@ -726,9 +681,11 @@ string make_string(pair<pair<int,int>, pair<int,int> > removing_markers ,pair<in
 
 }
 
+
+
 // Sample C++ Code 
 int main(int argc, char** argv) {
-    //std::ofstream ofs ("test.txt", std::ofstream::out);
+    std::ofstream ofs ("test.txt", std::ofstream::out);
 
     //ofs << "lorem ipsum";
 
@@ -822,19 +779,12 @@ int main(int argc, char** argv) {
             }
             else{
                 //OUTPUT MAIN MOVE
-                string s_initial ="";
-                bool initial_remove = initial_removal(board,player_id,s_initial);
                 s_out = alpha_beta_search(board,player_id);
                 s_out.pop_back();//delete last space
-                if(initial_remove){
-                    cout<<s_initial<<s_out<<endl;
-                }else{
-                    cout<<s_out<<endl;
-                }
                 //std::ofstream ofs ("test.txt", std::ofstream::out);
                 ofs<<"node: "<<node<<endl;
                 node=0;
-                
+                cout<<s_out<<endl;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 		        //MAKE THAT MOVE IN YOUR BOARD
 		        make_move(board, s_out, player_id);
@@ -890,15 +840,9 @@ int main(int argc, char** argv) {
             else{
                 
                 //OUTPUT MAIN MOVE
-                string s_initial ="";
-                bool initial_remove = initial_removal(board,player_id,s_initial);
                 s_out = alpha_beta_search(board,player_id);
                 s_out.pop_back();//delete last space
-                if(initial_remove){
-                    cout<<s_initial<<s_out<<endl;
-                }else{
-                    cout<<s_out<<endl;
-                }
+                cout<<s_out<<endl;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 	            //MAKE THAT MOVE IN YOUR BOARD
 	            make_move(board, s_out, player_id);
