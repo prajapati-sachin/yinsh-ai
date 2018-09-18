@@ -189,19 +189,19 @@ int Board::consecutive_marker(int num,int player_id){
         {
             pair<int,int> corner_point = b.get_corner_point(i,j);
             int count=0;
-            pair <int,int> start;
-            pair <int,int> end;
+            int start;
+            int end;
             int x_const = corner_point.first;
             int y_const = corner_point.second;
-            while(this->get_at_position(x_const,y_const)!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
+            while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
 
-                if(this->get_at_position(x_const,y_const)==player_id){
+                if(board[x_const][y_const]==player_id){
                     count++;
                     if(count==1){
-                        start=make_pair(x_const,y_const);
+                        start=1;
                     }
                     if(count==num){
-                        end=make_pair(x_const,y_const);
+                        end=1;
                         count_num++;
                         x_const-=num*x_change[i];
                 		y_const-=num*y_change[i];
@@ -210,7 +210,6 @@ int Board::consecutive_marker(int num,int player_id){
                 }else{
                     count=0;
                 }
-
                 x_const+=x_change[i];
                 y_const+=y_change[i];
             }
@@ -220,12 +219,90 @@ int Board::consecutive_marker(int num,int player_id){
     return count_num;
 }
 
+// int consecutive(int player_id){
+// 	int wt[] = {0,1,2,5,10};
+// 	int count_num = 0;
+//     int x_change[] = {1, 0, 1};
+//     int y_change[] = {0, 1,-1};
+//     for(int i=0;i<=2;i++){
+//         for (int j=1;j<10;j++){
+//         	pair<int,int> corner_point = b.get_corner_point(i,j);
+//         	int count=0;
+//         	int x_const = corner_point.first;
+//         	int y_const = corner_point.second;
+//         	while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
+//         		if(board[x_const][y_const]==player_id){
+//         			count++;
+//         			if(count==4){
+//         				count_num+=wt[4];
+//         				count=0;
+//         			}
+//         		}else{
+//         			count_num+=wt[count];
+//         			count=0;
+//         		}
+//         		x_const+=x_change[i];
+//         		y_const+=y_change[i];
+//         	}
+//         }
+//     }
+//     return count_num;
+// }
+
 int Board::evaluation( int player_id){
     int eval=0;
     eval+= 100*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
     eval+= (marker_count[player_id-1]-marker_count[3-player_id - 1]);
+    //int k=0;
+    // for(int i=0;i<2;i++){
+    // 	for(int j=0;j<10;j++){
+    // 		k++;
+    // 	}
+    // }
 
-    // eval+= this->consecutive_marker(4,player_id)*10;
+    int wt1[] = {0,0,2,5,10};
+    int wt2[] = {0,0,2,5,10};
+	int count_num = 0;
+    int x_change[] = {1, 0, 1};
+    int y_change[] = {0, 1,-1};
+    for(int i=0;i<=2;i++){
+        for (int j=1;j<10;j++){
+        	pair<int,int> corner_point = b.get_corner_point(i,j);
+        	int count1=0;
+        	int count2=0;
+        	int x_const = corner_point.first;
+        	int y_const = corner_point.second;
+        	while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
+        		if(board[x_const][y_const]==player_id){
+        			count1++;
+        			if(count1==4){
+        				count_num+=wt1[4];
+        				count1=0;
+        			}
+        		}else{
+        			count_num-=wt1[count1];
+        			count1=0;
+        		}
+
+        		if(board[x_const][y_const]==3-player_id){
+        			count2++;
+        			if(count2==4){
+        				count_num-=wt2[4];
+        				count2=0;
+        			}
+        		}else{
+        			count_num-=wt2[count2];
+        			count2=0;
+        		}
+
+
+        		x_const+=x_change[i];
+        		y_const+=y_change[i];
+        	}
+        }
+    }
+    eval+= count_num;
+    //eval+= this->consecutive_marker(4,player_id)*10;
     // eval-= this->consecutive_marker(4,3-player_id)*10;
 
     // eval+= this->consecutive_marker(3,player_id)*4;

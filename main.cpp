@@ -12,7 +12,7 @@ vector<pair<int, int> > rings2;
 vector<pair<int, int> > rings[2];
 stack<string> initial_moves;
 long long node;
-std::ofstream ofs ("test2.txt", std::ofstream::out);
+std::ofstream ofs ("te.txt", std::ofstream::out);
 
 /*
 Not in board: -1
@@ -357,10 +357,18 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id){
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
     int size = successors.size();
     ofs<<"size: "<<size<<endl;
-    if(size<30)
-        depth = 4;
-    else
-        depth = 3;
+    if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<=8){
+        depth=2;
+    }else{
+        if(size>30)
+            depth = 3;
+        else if(size>20)
+            depth = 4;
+        else
+            depth = 5;
+    }
+    //depth = 2;
+    ofs<<"depth: "<<depth<<endl;
     //ofs<<"size: "<<successors.size()<<endl;
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
@@ -899,6 +907,8 @@ int main(int argc, char** argv) {
                 }else{
                     cout<<s_out<<endl;
                 }
+                ofs<<"node: "<<node<<endl;
+                node=0;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 	            //MAKE THAT MOVE IN YOUR BOARD
 	            make_move(board, s_out, player_id);
