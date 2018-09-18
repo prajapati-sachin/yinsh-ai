@@ -337,19 +337,19 @@ bool initial_removal(Board &tempBoard,int player_id,string &str){
     }
 }
 
-string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id);
+string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,double remaining_time);
 int Max_value(Board &tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval);
 int Min_value(Board tempBoard, int alpha, int beta, int depth, int player_id,int player_id_for_eval);
 void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
 void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int> coordinates_for_ring,int player_id,int player_id_for_eval, Board &tempBoard, string &str,int &v,int &alpha,int &beta,int depth);
 
-string alpha_beta_search(Board &tempBoard,int player_id){
+string alpha_beta_search(Board &tempBoard,int player_id,double remaining_time){
 	
-	return Max_value_action(tempBoard,INT_MIN,INT_MAX,player_id);
+	return Max_value_action(tempBoard,INT_MIN,INT_MAX,player_id,remaining_time);
 }
 
 
-string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id){
+string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,double remaining_time){
 	int v = INT_MIN;
 	string move="";
     int depth = 0;
@@ -359,13 +359,15 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id){
     if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<=8){
         depth=2;
     }else{
-        if(size>30)
+        if(size>40)
             depth = 3;
         else if(size>20)
             depth = 4;
         else
             depth = 5;
     }
+    if(remaining_time<10)
+        depth=2;
     //depth = 2;
     ofs<<"depth: "<<depth<<endl;
     //ofs<<"size: "<<successors.size()<<endl;
@@ -835,7 +837,7 @@ int main(int argc, char** argv) {
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial);
-                s_out = alpha_beta_search(board,player_id);
+                s_out = alpha_beta_search(board,player_id,remaining_time);
                 s_out.pop_back();//delete last space
                 if(initial_remove){
                     cout<<s_initial<<s_out<<endl;
@@ -907,7 +909,7 @@ int main(int argc, char** argv) {
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial);
-                s_out = alpha_beta_search(board,player_id);
+                s_out = alpha_beta_search(board,player_id,remaining_time);
                 s_out.pop_back();//delete last space
                 if(initial_remove){
                     cout<<s_initial<<s_out<<endl;
