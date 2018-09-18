@@ -180,12 +180,57 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
 
 }
 
+int Board::consecutive_marker(int num,int player_id){
+    int count_num =0;
+    int x_change[] = {1, 0, 1};
+    int y_change[] = {0, 1,-1};
+    for(int i=0;i<=2;i++){
+        for (int j=1;j<10;j++)
+        {
+            pair<int,int> corner_point = b.get_corner_point(i,j);
+            int count=0;
+            pair <int,int> start;
+            pair <int,int> end;
+            int x_const = corner_point.first;
+            int y_const = corner_point.second;
+            while(this->get_at_position(x_const,y_const)!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
+
+                if(this->get_at_position(x_const,y_const)==player_id){
+                    count++;
+                    if(count==1){
+                        start=make_pair(x_const,y_const);
+                    }
+                    if(count==num){
+                        end=make_pair(x_const,y_const);
+                        count_num++;
+                        x_const-=num*x_change[i];
+                		y_const-=num*y_change[i];
+                        count=0;
+                    }
+                }else{
+                    count=0;
+                }
+
+                x_const+=x_change[i];
+                y_const+=y_change[i];
+            }
+
+        }
+    }
+    return count_num;
+}
 
 int Board::evaluation( int player_id){
     int eval=0;
     eval+= 100*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
     eval+= (marker_count[player_id-1]-marker_count[3-player_id - 1]);
-    // srand(time(0)); 
+
+    // eval+= this->consecutive_marker(4,player_id)*10;
+    // eval-= this->consecutive_marker(4,3-player_id)*10;
+
+    // eval+= this->consecutive_marker(3,player_id)*4;
+    // eval-= this->consecutive_marker(3,3-player_id)*4;
+    // // srand(time(0)); 
     
     // eval = rand()%100;
     return eval;

@@ -40,6 +40,8 @@ public:
 
     void set_at_position(int i,int j,int value);
 
+    int consecutive_marker(int num,int player_id);  
+
     int evaluation(int player_id);
 
     bool isTerminal();
