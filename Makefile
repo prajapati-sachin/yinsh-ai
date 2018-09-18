@@ -2,11 +2,8 @@
 CXX = g++
 CXXFLAGS      = -std=c++11 -O3 	
 
-main: main.o Board.o board_convert.o
-	$(CXX) -o main main.o Board.o board_convert.o
-
-main.o: main.cpp Board.cpp board_convert.cpp
-	$(CXX) $(CXXFLAGS) -c main.cpp
+main:  main.cpp Board.o board_convert.o
+	$(CXX) $(CXXFLAGS) main.cpp Board.cpp board_convert.cpp
 
 Board.o: Board.cpp board_convert.cpp
 	$(CXX) $(CXXFLAGS) -c Board.cpp	

@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include "board_convert.h"
 
 using namespace std;

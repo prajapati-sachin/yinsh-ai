@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include "Board.h"
 
 using namespace std;

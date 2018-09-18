@@ -1,5 +1,4 @@
-#include <iostream>
-#include <fstream>
+#include <bits/stdc++.h>
 #include "board_convert.h"
 #include "Board.h"
 
@@ -740,7 +739,7 @@ int main(int argc, char** argv) {
 
     //ofs << "lorem ipsum";
 
-  
+  	clock_t start = clock();
     // cout << sizeof(b) << "\n";
     // cout << "num of hexagons"<< b.no_of_hexagons() << "\n";
     // cout << "num of points in hex 2" << b.points_in_hexagon_i(2) << "\n";
@@ -829,6 +828,10 @@ int main(int argc, char** argv) {
                 ring_move++;
             }
             else{
+                clock_t current = clock();
+                double elapsed_time = double(current-start)/CLOCKS_PER_SEC;
+                double remaining_time = time_limit-elapsed_time;
+                // cout << "Elapsed Time: " << elapsed_time << "Remaining Time" << remaining_time << endl;
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial);
@@ -896,7 +899,11 @@ int main(int argc, char** argv) {
                 ring_move++;
             }
             else{
-                
+                clock_t current = clock();
+                double elapsed_time = double(current-start)/CLOCKS_PER_SEC;
+                double remaining_time = time_limit-elapsed_time;
+                // cout << "Elapsed Time: " << elapsed_time << "Remaining Time" << remaining_time << endl;
+
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial);
