@@ -1,0 +1,6 @@
+size: 79
+depth: 2
+node: 3577
+size: 72
+depth: 2
+node: 2936
