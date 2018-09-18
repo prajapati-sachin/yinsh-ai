@@ -356,18 +356,22 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,dou
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
     int size = successors.size();
     ofs<<"size: "<<size<<endl;
-    if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<=8){
+    if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<4){
         depth=2;
     }else{
-        if(size>40)
+        if(size>50)
             depth = 3;
-        else if(size>20)
+        else if(size>30)
             depth = 4;
         else
             depth = 5;
     }
-    if(remaining_time<10)
+    if(remaining_time<30)
+        depth=3;
+    else if(remaining_time<10)
         depth=2;
+    else if(remaining_time<2)
+        depth=1;
     //depth = 2;
     ofs<<"depth: "<<depth<<endl;
     //ofs<<"size: "<<successors.size()<<endl;
@@ -489,6 +493,8 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
     		            s2= make_string(removing_markers1[i],temp_ring1);
                         vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
                         if(removing_markers2.size()==0){
+                            if(depth > 3)
+                                depth = 3;
     			            value = Min_value(copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
     			            if(v<value){
     			            	str=s1+s2;
@@ -529,6 +535,8 @@ void move_ring_in_board_max(pair<int, int> coordinates_for_marker,pair<int, int>
         					            s3= make_string(removing_markers2[i],temp_ring2);
         			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
                                         if(removing_markers3.size()==0){
+                                            if(depth > 3)
+                                                depth = 3;
         						            value=Min_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
         						            if(v<value){
         						            	str=s1+s2+s3;
@@ -626,6 +634,8 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
     		            s2= make_string(removing_markers1[i],temp_ring1);
                         vector< pair < pair <int,int>, pair <int,int> > > removing_markers2 = find_removing_markers(copy_tempBoard,player_id);//markers to be removed
                         if(removing_markers2.size()==0){
+                            if(depth > 3)
+                                depth = 3;
                             value = Max_value(copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
                             if(v>value){
                             	str=s1+s2;
@@ -666,7 +676,9 @@ void move_ring_in_board_min(pair<int, int> coordinates_for_marker,pair<int, int>
         					            s3= make_string(removing_markers2[i],temp_ring2);
         			                    vector< pair < pair <int,int>, pair <int,int> > > removing_markers3 = find_removing_markers(copy_copy_tempBoard,player_id);//markers to be removed
                                         if(removing_markers3.size()==0){
-        			                        value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
+        			                        if(depth > 3)
+                                                depth = 3;
+                                            value = Max_value(copy_copy_tempBoard,alpha,beta,depth-1,3-player_id,player_id_for_eval);
         			                        if(v>value){
         			                        	str=s1+s2+s3;
         			                        	v=value;
