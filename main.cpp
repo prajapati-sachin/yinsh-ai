@@ -11,7 +11,7 @@ vector<pair<int, int> > rings2;
 vector<pair<int, int> > rings[2];
 stack<string> initial_moves;
 long long node;
-std::ofstream ofs ("te.txt", std::ofstream::out);
+// std::ofstream ofs ("te.txt", std::ofstream::out);
 
 /*
 Not in board: -1
@@ -355,7 +355,7 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,dou
     int depth = 0;
 	vector<pair<pair<int,int>,pair<int,int> > > successors = tempBoard.neighbour(player_id);
     int size = successors.size();
-    ofs<<"size: "<<size<<endl;
+    // ofs<<"size: "<<size<<endl;
     if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<4){
         depth=2;
     }else{
@@ -373,7 +373,7 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,dou
     else if(remaining_time<2)
         depth=1;
     //depth = 2;
-    ofs<<"depth: "<<depth<<endl;
+    // ofs<<"depth: "<<depth<<endl;
     //ofs<<"size: "<<successors.size()<<endl;
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
@@ -851,13 +851,17 @@ int main(int argc, char** argv) {
                 bool initial_remove = initial_removal(board,player_id,s_initial);
                 s_out = alpha_beta_search(board,player_id,remaining_time);
                 s_out.pop_back();//delete last space
-                if(initial_remove){
+                if(initial_remove && !board.isTerminal()){
                     cout<<s_initial<<s_out<<endl;
-                }else{
+                }
+                else if(initial_remove && board.isTerminal()){
+                	cout<<s_initial<<endl;	
+                }
+                else{
                     cout<<s_out<<endl;
                 }
                 //std::ofstream ofs ("test.txt", std::ofstream::out);
-                ofs<<"node: "<<node<<endl;
+                // ofs<<"node: "<<node<<endl;
                 node=0;
                 
             	///////////////////////////////////////////////////////////////////////////////////////// 
@@ -923,12 +927,16 @@ int main(int argc, char** argv) {
                 bool initial_remove = initial_removal(board,player_id,s_initial);
                 s_out = alpha_beta_search(board,player_id,remaining_time);
                 s_out.pop_back();//delete last space
-                if(initial_remove){
+                if(initial_remove && !board.isTerminal()){
                     cout<<s_initial<<s_out<<endl;
-                }else{
+                }
+                else if(initial_remove && board.isTerminal()){
+                	cout<<s_initial<<endl;	
+                }
+                else{
                     cout<<s_out<<endl;
                 }
-                ofs<<"node: "<<node<<endl;
+                // ofs<<"node: "<<node<<endl;
                 node=0;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 	            //MAKE THAT MOVE IN YOUR BOARD
