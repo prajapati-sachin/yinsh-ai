@@ -196,7 +196,7 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ,int
 
 int Board::evaluation( int player_id,int n,int s){
     int eval=0;
-    eval+= 500*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
+    eval+= 3000*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
     eval+= (marker_count[player_id-1]-marker_count[3-player_id - 1]);
     //int k=0;
     // for(int i=0;i<2;i++){
@@ -216,8 +216,8 @@ int Board::evaluation( int player_id,int n,int s){
         }
     }
 
-    int wt1[] = {0,0,2,5,30,100};
-    int wt2[] = {0,0,2,5,30,100};
+    int wt1[] = {0,0,2,5,30,200};
+    int wt2[] = {0,0,2,5,30,200};
 	int count_num = 0;
     int x_change[] = {1, 0, 1};
     int y_change[] = {0, 1,-1};
