@@ -3,18 +3,21 @@
 
 using namespace std;
 
-Board::Board(){
-	for(int i=0;i<11;i++){
-        for(int j=0;j<11;j++){
+Board::Board(int n){
+
+
+
+	for(int i=0;i<13;i++){
+        for(int j=0;j<13;j++){
             board[i][j]=-1;
         }
     }
-    int num_hex=b.no_of_hexagons();
+    int num_hex=b.no_of_hexagons(n);
 
     for(int i=0;i<num_hex;i++){
-        int num_points=b.points_in_hexagon_i(i);
+        int num_points=b.points_in_hexagon_i(i,n);
         for(int j=0;j<num_points;j++){
-            pair<int, int> a = b.get_2dpoint(i, j);
+            pair<int, int> a = b.get_2dpoint(i, j,n);
             if(a.first!=-1 && a.second!=-1)
                 board[a.first][a.second]=0;
         }
@@ -28,8 +31,8 @@ Board::Board(){
 }
 
 Board::Board(const Board& copy){
-	for(int i=0;i<11;i++){
-        for(int j=0;j<11;j++){
+	for(int i=0;i<13;i++){
+        for(int j=0;j<13;j++){
             board[i][j]=copy.board[i][j];//get_at_position(i,j);
         }
     }
@@ -59,9 +62,9 @@ int Board::get_at_position(int i,int j){
 	return board[i][j];
 }
 
-bool Board::isTerminal(){
-	bool b1 = this->get_ring_count(1)<=2;
-	bool b2 = this->get_ring_count(2)<=2;
+bool Board::isTerminal(int n){
+	bool b1 = this->get_ring_count(1)<=n-3;
+	bool b2 = this->get_ring_count(2)<=n-3;
 	return b1 || b2;
 }
 
@@ -141,7 +144,14 @@ void Board::set_at_position(int i,int j,int value){
 	board[i][j]=value;
 }
 
-vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
+vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ,int n){
+	int lim;
+	if(n==5){
+		lim=11;
+	}else{
+		lim=13;
+	}
+
     vector<pair< pair<int,int> , pair<int,int> > > ans;
     for(int i=0;i<rings[player_id-1].size();i++){
 	    pair<int,int> curr_ring = (rings[player_id-1])[i];
@@ -152,7 +162,7 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
 	        int x_cordinate=curr_ring.first+x_change[j];
 	        int y_cordinate=curr_ring.second+y_change[j];
 	        int c=0;
-	        while(board[x_cordinate][y_cordinate]!=-1 && x_cordinate>=0 && x_cordinate<11 && y_cordinate>=0 && y_cordinate<11 ){
+	        while(board[x_cordinate][y_cordinate]!=-1 && x_cordinate>=0 && x_cordinate<lim && y_cordinate>=0 && y_cordinate<lim ){
 	            if(board[x_cordinate][y_cordinate]==0){
 	                if(c==0){
 	                    ans.push_back(make_pair(curr_ring,make_pair(x_cordinate, y_cordinate)));
@@ -181,76 +191,10 @@ vector<pair<pair<int,int>,pair<int,int> > > Board::neighbour( int player_id ){
 
 }
 
-int Board::consecutive_marker(int num,int player_id){
-    int count_num =0;
-    int x_change[] = {1, 0, 1};
-    int y_change[] = {0, 1,-1};
-    for(int i=0;i<=2;i++){
-        for (int j=1;j<10;j++)
-        {
-            pair<int,int> corner_point = b.get_corner_point(i,j);
-            int count=0;
-            int start;
-            int end;
-            int x_const = corner_point.first;
-            int y_const = corner_point.second;
-            while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
 
-                if(board[x_const][y_const]==player_id){
-                    count++;
-                    if(count==1){
-                        start=1;
-                    }
-                    if(count==num){
-                        end=1;
-                        count_num++;
-                        x_const-=num*x_change[i];
-                		y_const-=num*y_change[i];
-                        count=0;
-                    }
-                }else{
-                    count=0;
-                }
-                x_const+=x_change[i];
-                y_const+=y_change[i];
-            }
 
-        }
-    }
-    return count_num;
-}
 
-// int consecutive(int player_id){
-// 	int wt[] = {0,1,2,5,10};
-// 	int count_num = 0;
-//     int x_change[] = {1, 0, 1};
-//     int y_change[] = {0, 1,-1};
-//     for(int i=0;i<=2;i++){
-//         for (int j=1;j<10;j++){
-//         	pair<int,int> corner_point = b.get_corner_point(i,j);
-//         	int count=0;
-//         	int x_const = corner_point.first;
-//         	int y_const = corner_point.second;
-//         	while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
-//         		if(board[x_const][y_const]==player_id){
-//         			count++;
-//         			if(count==4){
-//         				count_num+=wt[4];
-//         				count=0;
-//         			}
-//         		}else{
-//         			count_num+=wt[count];
-//         			count=0;
-//         		}
-//         		x_const+=x_change[i];
-//         		y_const+=y_change[i];
-//         	}
-//         }
-//     }
-//     return count_num;
-// }
-
-int Board::evaluation( int player_id){
+int Board::evaluation( int player_id,int n,int s){
     int eval=0;
     eval+= 500*((ring_count[3-player_id - 1])-(ring_count[player_id - 1]));
     eval+= (marker_count[player_id-1]-marker_count[3-player_id - 1]);
@@ -260,35 +204,46 @@ int Board::evaluation( int player_id){
     // 		k++;
     // 	}
     // }
+    int st,en,lim;
+    if(n==5){
+        st=1;en=10;lim=11;
+    }else{
+        if(s==6){
+            st=1;en=12;lim=13;
+        }
+        else{
+            st=0;en=13;lim=13;
+        }
+    }
 
-    int wt1[] = {0,0,2,5,30};
-    int wt2[] = {0,0,2,5,30};
+    int wt1[] = {0,0,2,5,30,100};
+    int wt2[] = {0,0,2,5,30,100};
 	int count_num = 0;
     int x_change[] = {1, 0, 1};
     int y_change[] = {0, 1,-1};
     for(int i=0;i<=2;i++){
-        for (int j=1;j<10;j++){
-        	pair<int,int> corner_point = b.get_corner_point(i,j);
+        for (int j=st;j<en;j++){
+        	pair<int,int> corner_point = b.get_corner_point(i,j,5);
         	int count1=0;
         	int count2=0;
         	int x_const = corner_point.first;
         	int y_const = corner_point.second;
-        	while(board[x_const][y_const]!=-1&&x_const<11&&x_const>=0&&y_const<11&&y_const>=0){
+        	while(board[x_const][y_const]!=-1&&x_const<lim&&x_const>=0&&y_const<lim&&y_const>=0){
         		if(board[x_const][y_const]==player_id){
         			count1++;
-        			if(count1==4){
-        				count_num+=wt1[4];
+        			if(count1==s-1){
+        				count_num+=wt1[s-1];
         				count1=0;
         			}
         		}else{
-        			count_num-=wt1[count1];
+        			count_num+=wt1[count1];
         			count1=0;
         		}
 
         		if(board[x_const][y_const]==3-player_id){
         			count2++;
-        			if(count2==4){
-        				count_num-=wt2[4];
+        			if(count2==s-1){
+        				count_num-=wt2[s-1];
         				count2=0;
         			}
         		}else{

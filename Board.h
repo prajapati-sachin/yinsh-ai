@@ -5,19 +5,19 @@
 #include "board_convert.h"
 
 using namespace std;
-#include "board_convert.h"
+
 
 class Board {
 public:
 
-    int board[11][11];
+    int board[13][13];
     board_convert b;
     vector<pair<int, int> > rings[2];
     int ring_count[2];
     int marker_count[2];
 
     //empty constructor
-    Board();
+    Board(int n);
 
     //copy
     Board(const Board& copy);
@@ -38,15 +38,13 @@ public:
 
     // void delete_ring(int player);
 
-    void set_at_position(int i,int j,int value);
+    void set_at_position(int i,int j,int value);  
 
-    int consecutive_marker(int num,int player_id);  
+    int evaluation(int player_id,int n,int s);
 
-    int evaluation(int player_id);
+    bool isTerminal(int n);
 
-    bool isTerminal();
-
-    vector<pair<pair<int,int>,pair<int,int> > > neighbour( int player_id );
+    vector<pair<pair<int,int>,pair<int,int> > > neighbour( int player_id ,int n);
 
 };
 
