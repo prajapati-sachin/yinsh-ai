@@ -12,6 +12,7 @@ vector<pair<int, int> > rings[2];
 stack<string> initial_moves;
 long long node;
 // std::ofstream ofs ("te.txt", std::ofstream::out);
+std::ofstream ofs ("test.txt", std::ofstream::out);
 
 /*
 Not in board: -1
@@ -372,13 +373,31 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,dou
     if(tempBoard.get_marker_count(player_id)+tempBoard.get_marker_count(3-player_id)<4){
         depth=2;
     }else{
-        if(size>50)
-            depth = 3;
-        else if(size>30)
-            depth = 4;
-        else
-            depth = 5;
-    }
+        if(n==5){
+            if(size>55)
+                depth = 3;
+            else if(size>33)
+                depth = 4;
+            else
+                depth = 5;
+        }else{
+            if(s==5){
+                if(size>60)
+                    depth = 3;
+                else if(size>35)
+                    depth = 4;
+                else
+                    depth = 5;
+            }else{
+                if(size>65)
+                    depth = 3;
+                else if(size>35)
+                    depth = 4;
+                else
+                    depth = 5;
+            }
+        }
+    }   
     if(remaining_time<30)
         depth=3;
     else if(remaining_time<10)
@@ -386,8 +405,8 @@ string Max_value_action(Board &tempBoard, int alpha, int beta, int player_id,dou
     else if(remaining_time<2)
         depth=1;
     //depth = 2;
-    // ofs<<"depth: "<<depth<<endl;
-    //ofs<<"size: "<<successors.size()<<endl;
+    ofs<<"depth: "<<depth<<endl;
+    ofs<<"size: "<<successors.size()<<endl;
 	for(int i=0;i<successors.size();i++){
 		Board copy = Board(tempBoard);
 		//cout<<successors[i].first.first<<","<<successors[i].first.second <<endl;
@@ -762,7 +781,7 @@ string make_string(pair<pair<int,int>, pair<int,int> > removing_markers ,pair<in
 
 // Sample C++ Code 
 int main(int argc, char** argv) {
-    //std::ofstream ofs ("test.txt", std::ofstream::out);
+    // std::ofstream ofs ("test.txt", std::ofstream::out);
 
     //ofs << "lorem ipsum";
 
@@ -830,6 +849,7 @@ int main(int argc, char** argv) {
                 double elapsed_time = double(current-start)/CLOCKS_PER_SEC;
                 double remaining_time = time_limit-(elapsed_time- time_taken_by_other_player) ;
                 // cout << "Elapsed Time: " << elapsed_time << "Remaining Time" << remaining_time << endl;
+                ofs<<"remaining_time: "<<remaining_time<<endl;
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial,n,s);
@@ -845,7 +865,7 @@ int main(int argc, char** argv) {
                     cout<<s_out<<endl;
                 }
                 //std::ofstream ofs ("test.txt", std::ofstream::out);
-                // ofs<<"node: "<<node<<endl;
+                ofs<<"node: "<<node<<endl;
                 node=0;
                 
             	///////////////////////////////////////////////////////////////////////////////////////// 
@@ -909,7 +929,7 @@ int main(int argc, char** argv) {
                 double elapsed_time = double(current-start)/CLOCKS_PER_SEC;
                 double remaining_time = time_limit-(elapsed_time - time_taken_by_other_player) ;
                 // cout << "Elapsed Time: " << elapsed_time << "Remaining Time" << remaining_time << endl;
-
+                ofs<<"remaining_time: "<<remaining_time<<endl;
                 //OUTPUT MAIN MOVE
                 string s_initial ="";
                 bool initial_remove = initial_removal(board,player_id,s_initial,n,s);
@@ -924,7 +944,7 @@ int main(int argc, char** argv) {
                 else{
                     cout<<s_out<<endl;
                 }
-                // ofs<<"node: "<<node<<endl;
+                ofs<<"node: "<<node<<endl;
                 node=0;
             	///////////////////////////////////////////////////////////////////////////////////////// 
 	            //MAKE THAT MOVE IN YOUR BOARD

@@ -261,7 +261,7 @@ board_convert::board_convert(){
 	u7.push_back(make_pair(-1,-1));
 	u7.push_back(make_pair(1,12));
 	u7.push_back(make_pair(2,12));
-	u7.push_back(make_pair(3,11));
+	u7.push_back(make_pair(3,12));
 	u7.push_back(make_pair(4,12));
 	u7.push_back(make_pair(5,12));
 	big_hex_data.push_back(u7);
